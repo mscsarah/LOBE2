@@ -1,0 +1,1249 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LOBEST | منصة هندسة الليزر 2026</title>
+    
+    <!-- Google Fonts: Cairo -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Tailwind Config with Dark Mode Support -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            800: '#111827',
+                            900: '#0B1121',
+                        },
+                        gold: '#D4AF37',
+                        primary: '#1E3A8A',
+                    },
+                    fontFamily: {
+                        sans: ['Cairo', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { font-family: 'Cairo', sans-serif; scroll-behavior: smooth; }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        .dark ::-webkit-scrollbar-track { background: #0B1121; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .dark ::-webkit-scrollbar-thumb { background: #374151; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .dark ::-webkit-scrollbar-thumb:hover { background: #4B5563; }
+
+        /* Hero Slider Transitions */
+        .slide { opacity: 0; transition: opacity 0.8s ease-in-out, transform 0.8s ease-in-out; position: absolute; inset: 0; transform: scale(1.05); }
+        .slide.active { opacity: 1; z-index: 10; transform: scale(1); }
+        
+        /* Pastel Card Colors (Light Mode) */
+        .card-green { background-color: #F0FDF4; border: 1px solid #DCFCE7; }
+        .card-red { background-color: #FEF2F2; border: 1px solid #FEE2E2; }
+        .card-blue { background-color: #EFF6FF; border: 1px solid #DBEAFE; }
+        .card-purple { background-color: #FAF5FF; border: 1px solid #F3E8FF; }
+
+        /* Pastel Card Colors (Dark Mode) */
+        html.dark .card-green { background-color: #0b1c14; border-color: #166534; }
+        html.dark .card-red { background-color: #1f0b0b; border-color: #991B1B; }
+        html.dark .card-blue { background-color: #0b132b; border-color: #1E3A8A; }
+        html.dark .card-purple { background-color: #180b2b; border-color: #5B21B6; }
+
+        /* Status Pills */
+        .pill { padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; }
+        .pill.available { background: #DCFCE7; color: #166534; }
+        html.dark .pill.available { background: #14532d; color: #4ade80; }
+        .pill.wait { background: #FEF3C7; color: #B45309; }
+        html.dark .pill.wait { background: #78350f; color: #facc15; }
+        .pill.full { background: #FEE2E2; color: #991B1B; }
+        html.dark .pill.full { background: #7f1d1d; color: #f87171; }
+
+        #toast { visibility: hidden; min-width: 280px; background: #0B1121; color: #fff; text-align: center; border-radius: 12px; padding: 16px; position: fixed; z-index: 9999; left: 50%; bottom: 30px; transform: translateX(-50%) translateY(20px); font-size: 14px; font-weight: bold; opacity: 0; transition: 0.4s; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        #toast.show { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(0); }
+        
+        .panel { display: none; animation: fadeIn 0.4s; } 
+        .panel.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* PRINT STYLES */
+        .print-only { display: none; }
+        @media print {
+            body * { visibility: hidden; }
+            #official-letter-print, #official-letter-print * { visibility: visible; }
+            #official-letter-print { position: absolute; left: 0; top: 0; width: 100%; color: #000 !important; background: #fff !important; font-family: 'Times New Roman', Tahoma, Arial, sans-serif !important; direction: rtl; padding: 20px; }
+            .print-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #000; padding-bottom: 15px; margin-bottom: 30px; }
+            .print-header-text { text-align: center; font-size: 16px; font-weight: bold; line-height: 1.5; }
+            .print-title { text-align: center; font-size: 22px; font-weight: bold; margin-bottom: 30px; text-decoration: underline;}
+            .print-body { font-size: 18px; line-height: 1.8; margin-bottom: 30px; text-align: justify; }
+            .print-table { width: 100%; border-collapse: collapse; margin-bottom: 50px; }
+            .print-table th, .print-table td { border: 1px solid #000; padding: 12px; text-align: center; font-size: 16px; color: #000 !important; }
+            .print-table th { background-color: #f0f0f0 !important; font-weight: bold; -webkit-print-color-adjust: exact; }
+            .print-footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 50px; }
+            .print-sign { text-align: center; font-size: 18px; font-weight: bold; }
+            @page { margin: 1.5cm; }
+        }
+    </style>
+    <!-- Theme Script Init -->
+    <script>
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+</head>
+<body class="text-gray-800 bg-gray-50 dark:bg-navy-900 transition-colors duration-300">
+
+<!-- Toast Notification -->
+<div id="toast" class="dark:border dark:border-white/10">رسالة النظام هنا</div>
+
+<!-- Print Template -->
+<div id="official-letter-print" class="print-only">
+    <div class="print-header">
+        <div class="print-header-text" style="text-align: right;">
+            جمهورية العراق<br>
+            وزارة التعليم العالي والبحث العلمي<br>
+            جامعة دجلة / كلية الهندسة<br>
+            قسم هندسة الليزر والإلكترونيات البصرية
+        </div>
+        <div>
+            <h1 style="margin:0; border:2px solid #000; padding:10px 20px; border-radius:10px;">جامعة دجلة</h1>
+        </div>
+        <div class="print-header-text" style="text-align: left;">
+            العدد: ...................<br>
+            التاريخ: <span id="print-date"></span><br>
+            المرفقات: لا يوجد
+        </div>
+    </div>
+    <div class="print-body">
+        <div style="font-weight: bold; margin-bottom: 20px; font-size: 20px;" id="print-to-location">إلى: إدارة المستشفى / المركز المحترمين</div>
+        <div style="font-weight: bold; text-decoration: underline; margin-bottom: 15px;">م/ تسهيل مهمة تدريب صيفي</div>
+        <p>تحية طيبة...</p>
+        <p>يرجى التفضل بالموافقة على تدريب الطلبة المدرجة أسماؤهم في أدناه، والذين اجتازوا المرحلة الثالثة بنجاح في قسم هندسة الليزر والإلكترونيات البصرية للعام الدراسي الحالي. راجين شمولهم ببرنامجكم التدريبي وتزويدنا بتقييمهم وتأييد اجتيازهم فترة التدريب المقررة بعد الانتهاء، خدمة للصالح العام وللمسيرة العلمية.</p>
+        <p>مع فائق الشكر والتقدير...</p>
+    </div>
+    <table class="print-table">
+        <thead>
+            <tr>
+                <th style="width: 10%;">ت</th><th style="width: 40%;">اسم الطالب الثلاثي</th><th style="width: 25%;">المحافظة</th><th style="width: 25%;">ملاحظات / التوقيع</th>
+            </tr>
+        </thead>
+        <tbody id="print-table-body"></tbody>
+    </table>
+    <div class="print-footer">
+        <div><b>نسخة منه إلى:</b><br>- رئاسة القسم / للحفظ.<br>- ملفات الطلبة.</div>
+        <div class="print-sign">التوقيع: ....................................<br><br><b>م.م سارة صباح الزيدي</b><br>المشرف الأكاديمي للتدريب الصيفي<br>قسم هندسة الليزر والإلكترونيات البصرية</div>
+    </div>
+</div>
+
+<!-- Main App Wrapper -->
+<div id="main-website">
+
+    <!-- Header -->
+    <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 h-20 flex justify-between items-center">
+            
+            <div class="flex items-center gap-4">
+                <!-- Hamburger -->
+                <button onclick="toggleSidebar()" class="text-white hover:text-gold transition">
+                    <i class="ph ph-list text-3xl"></i>
+                </button>
+                <!-- Theme Switcher -->
+                <button onclick="toggleTheme()" id="theme-toggle-btn" class="text-white hover:text-gold transition bg-white/10 p-2 rounded-full backdrop-blur-sm border border-white/20">
+                    <i class="ph ph-moon text-xl"></i>
+                </button>
+            </div>
+            
+            <!-- Logo -->
+            <div class="flex items-center gap-3 text-right">
+                <div class="flex flex-col text-white">
+                    <span class="font-black text-xl tracking-wider leading-none">LOBEST</span>
+                    <span class="text-[10px] text-gray-300">Laser & Optoelectronics</span>
+                </div>
+                <div class="w-10 h-10 bg-black dark:bg-white dark:text-black rounded flex items-center justify-center text-white font-bold text-xl">L</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sidebar Menu -->
+    <div id="sidebar" class="fixed inset-y-0 right-0 w-72 bg-white dark:bg-navy-800 dark:border-l dark:border-white/10 shadow-2xl z-[60] transform translate-x-full transition-transform duration-300 flex flex-col">
+        <div class="p-6 border-b dark:border-white/10 flex justify-between items-center">
+            <div class="w-8 h-8 bg-black dark:bg-white dark:text-black rounded flex items-center justify-center text-white font-bold">L</div>
+            <button onclick="toggleSidebar()" class="text-gray-500 dark:text-gray-400 hover:text-red-500"><i class="ph ph-x text-2xl"></i></button>
+        </div>
+        <div class="flex-1 overflow-y-auto py-4">
+            <nav class="flex flex-col gap-2 px-4">
+                <a href="#hero" onclick="toggleSidebar()" class="py-3 px-4 rounded-lg hover:bg-gray-100 dark:hover:bg-navy-700 font-bold text-gray-800 dark:text-gray-200">الرئيسية</a>
+                <a href="#about" onclick="toggleSidebar()" class="py-3 px-4 rounded-lg hover:bg-gray-100 dark:hover:bg-navy-700 font-bold text-gray-800 dark:text-gray-200">إحصائيات المنصة</a>
+                <a href="#places" onclick="toggleSidebar()" class="py-3 px-4 rounded-lg hover:bg-gray-100 dark:hover:bg-navy-700 font-bold text-gray-800 dark:text-gray-200">أماكن التدريب</a>
+                <a href="#register" onclick="toggleSidebar()" class="py-3 px-4 rounded-lg hover:bg-gray-100 dark:hover:bg-navy-700 font-bold text-gray-800 dark:text-gray-200">التسجيل</a>
+                <a href="#reports" onclick="toggleSidebar()" class="py-3 px-4 rounded-lg hover:bg-gray-100 dark:hover:bg-navy-700 font-bold text-gray-800 dark:text-gray-200">التقارير</a>
+                <a href="#contact" onclick="toggleSidebar()" class="py-3 px-4 rounded-lg hover:bg-gray-100 dark:hover:bg-navy-700 font-bold text-gray-800 dark:text-gray-200">التواصل</a>
+            </nav>
+        </div>
+        <div class="p-4 border-t dark:border-white/10">
+            <button onclick="openLoginModal()" class="w-full py-3 bg-navy-900 dark:bg-gold dark:text-navy-900 text-white rounded-xl font-bold hover:bg-gold transition shadow-lg">تسجيل الدخول</button>
+        </div>
+    </div>
+    <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-[55] hidden opacity-0 transition-opacity"></div>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="fixed inset-0 z-[70] hidden flex items-center justify-center">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeLoginModal()"></div>
+        <div class="bg-white dark:bg-navy-800 w-full max-w-md rounded-3xl shadow-2xl relative z-10 p-8 transform scale-95 transition-transform border dark:border-white/10" id="login-box">
+            <button onclick="closeLoginModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 dark:hover:text-white"><i class="ph ph-x text-xl"></i></button>
+            <div class="text-center mb-6">
+                <div class="w-12 h-12 bg-navy-900 dark:bg-white dark:text-black rounded-xl mx-auto flex items-center justify-center text-white text-2xl font-bold mb-3">L</div>
+                <h3 class="text-2xl font-bold text-navy-900 dark:text-white">تسجيل الدخول</h3>
+                <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">للوصول إلى لوحة التحكم الخاصة بك</p>
+            </div>
+            
+            <div class="flex bg-gray-100 dark:bg-navy-900 p-1 rounded-xl mb-6">
+                <button class="flex-1 py-2 rounded-lg font-bold text-sm bg-white dark:bg-navy-700 shadow text-navy-900 dark:text-white transition" id="btn-role-student" onclick="switchLoginRole('student')">طالب</button>
+                <button class="flex-1 py-2 rounded-lg font-bold text-sm text-gray-500 dark:text-gray-400 hover:text-navy-900 dark:hover:text-white transition bg-transparent shadow-none" id="btn-role-admin" onclick="switchLoginRole('admin')">مشرف / مدير</button>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">البريد الإلكتروني</label>
+                    <div class="relative">
+                        <i class="ph ph-envelope absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <input type="email" id="login-email" class="w-full pl-4 pr-10 py-3 rounded-xl border border-gray-200 dark:border-navy-600 focus:border-gold focus:ring-2 focus:ring-gold/20 outline-none transition bg-gray-50 dark:bg-navy-900 dark:text-white" placeholder="example@uodiyala.edu.iq">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">كلمة المرور</label>
+                    <div class="relative">
+                        <i class="ph ph-lock absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <input type="password" id="login-pass" class="w-full pl-10 pr-10 py-3 rounded-xl border border-gray-200 dark:border-navy-600 focus:border-gold focus:ring-2 focus:ring-gold/20 outline-none transition bg-gray-50 dark:bg-navy-900 dark:text-white" placeholder="••••••••">
+                        <button onclick="togglePassword()" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 dark:hover:text-white"><i class="ph ph-eye"></i></button>
+                    </div>
+                </div>
+                <button onclick="window.handleLogin()" class="w-full py-3.5 bg-gold text-navy-900 rounded-xl font-bold text-lg hover:bg-yellow-400 transition shadow-lg mt-2">دخول للمنصة</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section id="hero" class="relative h-screen min-h-[650px] bg-navy-900 overflow-hidden flex flex-col">
+        <!-- Local Images Slider -->
+        <div id="slider-bg" class="absolute inset-0">
+            <div class="slide active bg-[url('hero1.jpg')] bg-cover bg-center"></div>
+            <div class="slide bg-[url('hero2.jpg')] bg-cover bg-center"></div>
+            <div class="slide bg-[url('hero3.jpg')] bg-cover bg-center"></div>
+            <div class="slide bg-[url('hero4.jpg')] bg-cover bg-center"></div>
+            <div class="slide bg-[url('hero5.jpg')] bg-cover bg-center"></div>
+        </div>
+        
+        <div class="absolute inset-0 bg-navy-900/80 dark:bg-navy-900/90 mix-blend-multiply"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-navy-900 dark:from-[#0B1121] via-transparent to-transparent"></div>
+
+        <!-- Content -->
+        <div class="relative z-20 flex-1 flex flex-col justify-center items-center text-center px-4 mt-10">
+            <p class="text-gold font-bold text-sm md:text-base tracking-widest mb-4 flex items-center gap-2">
+                <span class="w-8 h-[1px] bg-gold"></span>
+                برنامج التدريب الصيفي 2026
+                <span class="w-8 h-[1px] bg-gold"></span>
+            </p>
+            <h1 class="text-white text-4xl md:text-6xl lg:text-7xl font-black leading-tight mb-4 drop-shadow-lg">
+                هندسة الليزر<br>والإلكترونيات البصرية
+            </h1>
+            
+            <h2 id="slider-text" class="text-gray-300 text-lg md:text-2xl font-semibold mb-2 transition-opacity duration-500">مختبرات الليزر المتقدمة</h2>
+            <p id="slider-subtext" class="text-gray-400 text-sm md:text-base max-w-lg mx-auto mb-10 transition-opacity duration-500">تدريب عملي على أحدث أجهزة الليزر</p>
+
+            <!-- BIGGER Supervisor Badge -->
+            <div class="mb-10 flex items-center gap-5 bg-navy-900/60 dark:bg-navy-800/80 backdrop-blur-md px-6 py-4 rounded-[2rem] border border-white/10 shadow-2xl hover:scale-105 transition-transform duration-300 cursor-default">
+                <!-- Large Profile Picture -->
+                <img src="sara_photo.jpg" alt="م.م سارة صباح الزيدي" onerror="this.src='https://ui-avatars.com/api/?name=Sarah+Sabah&background=D4AF37&color=fff&size=256'" class="w-20 h-20 md:w-24 md:h-24 rounded-full border-4 border-gold object-cover shadow-lg">
+                <div class="text-right">
+                    <p class="text-xs md:text-sm text-gold font-bold mb-1 tracking-wide bg-gold/10 inline-block px-2 py-0.5 rounded">إشراف ومتابعة أكاديمية</p>
+                    <p class="text-lg md:text-xl text-white font-black drop-shadow">م.م سارة صباح الزيدي</p>
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto px-4">
+                <a href="#register" class="bg-gold text-navy-900 hover:bg-yellow-400 px-8 py-4 rounded-xl font-bold text-lg transition text-center shadow-[0_0_20px_rgba(212,175,55,0.3)]">سجّل الآن</a>
+                <a href="#about" class="bg-transparent border border-white text-white hover:bg-white/10 px-8 py-4 rounded-xl font-bold text-lg transition text-center backdrop-blur-sm">تعرف أكثر</a>
+            </div>
+        </div>
+
+        <!-- 5 Dots -->
+        <div class="relative z-20 pb-8 flex justify-center gap-2">
+            <button class="w-8 h-2 rounded-full bg-gold transition-all duration-300 slider-dot"></button>
+            <button class="w-2 h-2 rounded-full bg-white/40 hover:bg-white/70 transition-all duration-300 slider-dot"></button>
+            <button class="w-2 h-2 rounded-full bg-white/40 hover:bg-white/70 transition-all duration-300 slider-dot"></button>
+            <button class="w-2 h-2 rounded-full bg-white/40 hover:bg-white/70 transition-all duration-300 slider-dot"></button>
+            <button class="w-2 h-2 rounded-full bg-white/40 hover:bg-white/70 transition-all duration-300 slider-dot"></button>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section id="about" class="py-16 bg-white dark:bg-navy-800 relative transition-colors duration-300">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="text-center mb-12">
+                <p class="text-gold font-bold text-sm mb-2">إحصائيات المنصة المباشرة</p>
+                <h2 class="text-3xl md:text-4xl font-black text-navy-900 dark:text-white">متابعة مقاعد التدريب لعام 2026</h2>
+                <p class="mt-4 text-gray-600 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed">
+                    نظام متكامل لتوزيع طلاب هندسة الليزر والإلكترونيات البصرية على المراكز المعتمدة. توضح الإحصائيات أدناه حالة التسجيل الحالية وسعة المراكز.
+                </p>
+            </div>
+
+            <!-- Dynamic Stats Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-12">
+                <div class="bg-white dark:bg-navy-900 border border-gray-100 dark:border-white/5 shadow-sm rounded-2xl p-6 text-center hover:shadow-md transition">
+                    <i class="ph ph-buildings text-4xl text-blue-500 mb-3 mx-auto block"></i>
+                    <h3 class="text-3xl font-black text-navy-900 dark:text-white" id="stat-places">0</h3>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm font-bold">مكان تدريب متاح</p>
+                </div>
+                <div class="bg-white dark:bg-navy-900 border border-gray-100 dark:border-white/5 shadow-sm rounded-2xl p-6 text-center hover:shadow-md transition">
+                    <i class="ph ph-chalkboard-teacher text-4xl text-purple-500 mb-3 mx-auto block"></i>
+                    <h3 class="text-3xl font-black text-navy-900 dark:text-white">1</h3>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm font-bold">مشرف أكاديمي</p>
+                </div>
+                <div class="bg-white dark:bg-navy-900 border border-gray-100 dark:border-white/5 shadow-sm rounded-2xl p-6 text-center hover:shadow-md transition border-b-4 border-b-green-500">
+                    <i class="ph ph-users-three text-4xl text-green-500 mb-3 mx-auto block"></i>
+                    <h3 class="text-3xl font-black text-green-600 dark:text-green-400" id="stat-registered">0</h3>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm font-bold">طالب مسجل (الآن)</p>
+                </div>
+                <div class="bg-white dark:bg-navy-900 border border-gray-100 dark:border-white/5 shadow-sm rounded-2xl p-6 text-center hover:shadow-md transition border-b-4 border-b-gold">
+                    <i class="ph ph-book-open text-4xl text-gold mb-3 mx-auto block"></i>
+                    <h3 class="text-3xl font-black text-navy-900 dark:text-white" id="stat-total">0</h3>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm font-bold">إجمالي المقاعد الكلية</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Places Section -->
+    <section id="places" class="py-20 bg-gray-50 dark:bg-navy-900 border-t border-gray-100 dark:border-white/5 transition-colors duration-300">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="text-center mb-12">
+                <p class="text-gold font-bold text-sm mb-2">التوزيع الميداني</p>
+                <h2 class="text-3xl md:text-4xl font-black text-navy-900 dark:text-white">أماكن التدريب المتاحة</h2>
+                <p class="mt-3 text-gray-500 dark:text-gray-400">تم تحديث القائمة بناءً على التوجيهات الرسمية والمؤسسات المعتمدة لعام 2026</p>
+            </div>
+
+            <!-- Dynamically populated grid -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="places-grid">
+                <!-- Cards will be injected here via JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Registration Section -->
+    <section id="register" class="py-20 bg-white dark:bg-navy-800 transition-colors duration-300">
+        <div class="max-w-4xl mx-auto px-4">
+            <div class="bg-navy-900 rounded-[2.5rem] p-8 md:p-12 shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-gold/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+                <div class="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
+
+                <div class="relative z-10">
+                    <div class="text-center mb-10">
+                        <div class="w-16 h-16 bg-white/5 rounded-2xl mx-auto flex items-center justify-center mb-4 border border-white/10">
+                            <i class="ph ph-clipboard-text text-3xl text-gold"></i>
+                        </div>
+                        <h2 class="text-3xl font-black text-white">نموذج التسجيل 2026</h2>
+                        <p class="text-gray-400 mt-2">يرجى ملء البيانات بدقة لاختيار مركز التدريب المناسب</p>
+                    </div>
+
+                    <form id="form-register" onsubmit="window.handleRegister(event)" class="space-y-5">
+                        
+                        <div class="bg-white/5 p-6 rounded-2xl border border-white/10 space-y-5">
+                            <div class="grid md:grid-cols-2 gap-5">
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-300 mb-2">الاسم الكامل (الثلاثي)</label>
+                                    <input type="text" id="reg-name" required class="w-full bg-navy-800 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-gold focus:ring-1 focus:ring-gold outline-none transition" placeholder="أدخل اسمك الثلاثي">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-300 mb-2">المحافظة</label>
+                                    <div class="relative">
+                                        <select id="reg-gov" required class="w-full bg-navy-800 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-gold focus:ring-1 focus:ring-gold outline-none transition appearance-none cursor-pointer">
+                                            <option value="" disabled selected>-- اختر --</option>
+                                            <option value="بغداد">بغداد</option><option value="البصرة">البصرة</option><option value="نينوى">نينوى</option>
+                                            <option value="بابل">بابل</option><option value="ذي قار">ذي قار</option><option value="ديالى">ديالى</option>
+                                            <option value="الأنبار">الأنبار</option><option value="النجف">النجف</option><option value="كربلاء">كربلاء</option>
+                                            <option value="كركوك">كركوك</option><option value="واسط">واسط</option><option value="ميسان">ميسان</option>
+                                            <option value="صلاح الدين">صلاح الدين</option><option value="المثنى">المثنى</option><option value="القادسية">القادسية</option>
+                                            <option value="السليمانية">السليمانية</option><option value="دهوك">دهوك</option><option value="حلبجة">حلبجة</option>
+                                            <option value="أخرى">أخرى</option>
+                                        </select>
+                                        <i class="ph ph-caret-down absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="grid md:grid-cols-2 gap-5">
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-300 mb-2">البريد الإلكتروني للطالب</label>
+                                    <div class="relative">
+                                        <i class="ph ph-envelope absolute right-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                                        <input type="email" id="reg-email" required class="w-full bg-navy-800 border border-white/10 rounded-xl pr-11 pl-4 py-3 text-white focus:border-gold focus:ring-1 focus:ring-gold outline-none transition" placeholder="example@uodiyala.edu.iq">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-300 mb-2">مكان التدريب المطلوب</label>
+                                    <div class="relative">
+                                        <select id="reg-p1" required class="w-full bg-navy-800 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-gold focus:ring-1 focus:ring-gold outline-none transition appearance-none cursor-pointer">
+                                            <!-- Options populated via JS -->
+                                        </select>
+                                        <i class="ph ph-caret-down absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-bold text-gray-300 mb-2">كلمة المرور (مهمة لتسجيل الدخول لاحقاً)</label>
+                                <input type="password" id="reg-pass" required class="w-full md:w-1/2 bg-navy-800 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-gold focus:ring-1 focus:ring-gold outline-none transition" placeholder="••••••••">
+                            </div>
+                        </div>
+
+                        <button type="submit" id="btn-submit-reg" class="w-full md:w-auto bg-gold hover:bg-yellow-400 text-navy-900 font-black text-lg py-4 px-10 rounded-xl flex items-center justify-center gap-2 transition shadow-lg mt-4">
+                            إرسال طلب التدريب
+                            <i class="ph ph-paper-plane-right font-bold"></i>
+                        </button>
+                        <p class="text-xs text-gray-400 mt-2">ملاحظة: سيتم حفظ بياناتك فوراً في قاعدة البيانات وسيخضع طلبك للمراجعة من قبل الإدارة.</p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Reports Section -->
+    <section id="reports" class="py-20 bg-gray-50 dark:bg-navy-900 border-t border-gray-100 dark:border-white/5 transition-colors duration-300">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="grid lg:grid-cols-5 gap-10 items-start">
+                
+                <div class="lg:col-span-3 bg-white dark:bg-navy-800 p-8 border border-gray-100 dark:border-white/5 rounded-[2rem] shadow-sm">
+                    <div class="flex items-center gap-3 mb-8">
+                        <i class="ph ph-file-text text-2xl text-gold"></i>
+                        <h3 class="text-2xl font-black text-navy-900 dark:text-white">رفع تقرير جديد</h3>
+                    </div>
+                    
+                    <div class="space-y-5">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">الاسم الكامل</label>
+                            <div class="relative">
+                                <i class="ph ph-user absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                <input type="text" class="w-full bg-gray-50 dark:bg-navy-900 border border-gray-200 dark:border-navy-600 rounded-xl pr-11 pl-4 py-3 focus:border-gold focus:ring-1 focus:ring-gold outline-none transition dark:text-white" placeholder="أدخل اسمك الكامل">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">المركز التدريبي</label>
+                            <div class="relative">
+                                <i class="ph ph-buildings absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                <input type="text" class="w-full bg-gray-50 dark:bg-navy-900 border border-gray-200 dark:border-navy-600 rounded-xl pr-11 pl-4 py-3 focus:border-gold focus:ring-1 focus:ring-gold outline-none transition dark:text-white" placeholder="اسم المركز التدريبي">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">ملف التقرير (PDF)</label>
+                            <div class="border-2 border-dashed border-gray-300 dark:border-navy-600 rounded-2xl p-8 text-center bg-gray-50 dark:bg-navy-900 hover:bg-gray-100 dark:hover:bg-navy-700 transition cursor-pointer" onclick="document.getElementById('mock-file').click()">
+                                <i class="ph ph-upload-simple text-3xl text-gray-400 mb-2 block"></i>
+                                <p class="text-gray-600 dark:text-gray-300 font-bold text-sm">اسحب الملف هنا أو تصفح</p>
+                                <p class="text-gray-400 text-xs mt-1">PDF فقط، حجم أقصى 10MB</p>
+                                <input type="file" id="mock-file" class="hidden" accept=".pdf">
+                            </div>
+                        </div>
+
+                        <button onclick="window.showToast('يرجى تسجيل الدخول من لوحة الطالب لرفع التقارير بشكل فعلي', 'error')" class="w-full bg-navy-900 dark:bg-gold dark:text-navy-900 hover:bg-navy-800 dark:hover:bg-yellow-400 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition shadow-md mt-6">
+                            رفع التقرير
+                            <i class="ph ph-arrow-left"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-2 space-y-6">
+                    <div class="bg-navy-900 dark:bg-[#080d1a] border dark:border-white/5 text-white p-8 rounded-[2rem] shadow-lg">
+                        <h4 class="text-xl font-black mb-6 text-gold">تعليمات رفع التقارير</h4>
+                        <ul class="space-y-4">
+                            <li class="flex gap-3 items-start"><i class="ph-fill ph-check-circle text-gold mt-1 text-lg"></i><span class="text-sm text-gray-300 leading-relaxed">يجب أن يكون التقرير بصيغة PDF فقط</span></li>
+                            <li class="flex gap-3 items-start"><i class="ph-fill ph-check-circle text-gold mt-1 text-lg"></i><span class="text-sm text-gray-300 leading-relaxed">توقيع المشرف على التقرير إن أمكن</span></li>
+                            <li class="flex gap-3 items-start"><i class="ph-fill ph-check-circle text-gold mt-1 text-lg"></i><span class="text-sm text-gray-300 leading-relaxed">آخر موعد لرفع التقرير الأسبوعي: يوم السبت</span></li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact" class="bg-navy-900 text-white pt-20 border-t border-white/5">
+        <div class="max-w-6xl mx-auto px-4 pb-12">
+            
+            <!-- VERY BIG Supervisor Profile in Footer -->
+            <div class="flex flex-col items-center justify-center mb-16 border-b border-white/10 pb-12">
+                <img src="sara_photo.jpg" alt="م.م سارة صباح الزيدي" onerror="this.src='https://ui-avatars.com/api/?name=Sarah+Sabah&background=D4AF37&color=fff&size=512'" class="w-40 h-40 md:w-48 md:h-48 rounded-[2rem] border-4 border-gold/30 object-cover shadow-2xl mb-5 hover:scale-105 transition-transform duration-300">
+                <h3 class="text-3xl font-black text-white mb-2">م.م سارة صباح الزيدي</h3>
+                <p class="text-gold font-bold text-lg">المشرف الأكاديمي للتدريب الصيفي 2026</p>
+            </div>
+
+            <!-- Footer Text -->
+            <div class="text-center">
+                <div class="flex items-center justify-center gap-3 mb-4">
+                    <div class="w-10 h-10 bg-white rounded flex items-center justify-center text-navy-900 font-black text-lg">L</div>
+                    <span class="font-bold text-2xl tracking-widest text-white">LOBEST</span>
+                </div>
+                <p class="text-gray-400 text-sm">© 2026 جامعة دجلة - كلية الهندسة - قسم هندسة الليزر والإلكترونيات البصرية. جميع الحقوق محفوظة.</p>
+            </div>
+        </div>
+    </footer>
+</div>
+
+<!-- DASHBOARD SECTION (Hidden by default) -->
+<section id="dash" class="hidden min-h-screen bg-gray-50 dark:bg-navy-900 pb-20 transition-colors duration-300">
+    <!-- Dash Header -->
+    <header class="bg-navy-900 text-white h-20 flex items-center px-6 sticky top-0 z-40 shadow-md">
+        <div class="w-full max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-white rounded flex items-center justify-center text-navy-900 font-black text-xl">L</div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight" id="dash-title">لوحات التحكم</h1>
+                    <p class="text-xs text-gold" id="dash-subtitle">عام 2026</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                 <button onclick="toggleTheme()" class="text-white hover:text-gold transition bg-white/10 p-2 rounded-full backdrop-blur-sm border border-white/20">
+                    <i class="ph ph-moon text-lg"></i>
+                </button>
+                <button onclick="window.logout()" class="bg-white/10 hover:bg-red-500/20 text-white px-4 py-2 rounded-lg text-sm font-bold transition flex items-center gap-2 border border-white/10">
+                    تسجيل الخروج <i class="ph ph-sign-out"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-4 pt-8">
+        <!-- ADMIN PANEL -->
+        <div id="admin" class="panel">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                <div>
+                    <h2 class="text-2xl font-black text-navy-900 dark:text-white">لوحة الإدارة والمشرف</h2>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm">إدارة طلبات الطلاب لعام 2026</p>
+                </div>
+                <div class="flex gap-2">
+                    <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-bold shadow transition flex items-center gap-2" onclick="window.exportToExcel()"><i class="ph ph-microsoft-excel-logo"></i> تحميل Excel</button>
+                    <button class="bg-gold hover:bg-yellow-500 text-navy-900 px-4 py-2 rounded-lg text-sm font-bold shadow transition flex items-center gap-2" onclick="window.sendSummaryEmail()"><i class="ph ph-envelope-simple"></i> ملخص للإيميل</button>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="grid grid-cols-3 gap-4 mb-8">
+                <div class="bg-white dark:bg-navy-800 p-6 rounded-2xl border border-gray-100 dark:border-navy-700 shadow-sm">
+                    <p class="text-sm font-bold text-gray-500 dark:text-gray-400 mb-1">إجمالي المسجلين</p>
+                    <h3 class="text-4xl font-black text-navy-900 dark:text-white" id="admin-total">0</h3>
+                </div>
+                <div class="bg-white dark:bg-navy-800 p-6 rounded-2xl border border-gray-100 dark:border-navy-700 shadow-sm border-b-4 border-b-green-500">
+                    <p class="text-sm font-bold text-gray-500 dark:text-gray-400 mb-1">مقبول</p>
+                    <h3 class="text-4xl font-black text-green-600 dark:text-green-400" id="admin-accepted">0</h3>
+                </div>
+                <div class="bg-white dark:bg-navy-800 p-6 rounded-2xl border border-gray-100 dark:border-navy-700 shadow-sm border-b-4 border-b-yellow-500">
+                    <p class="text-sm font-bold text-gray-500 dark:text-gray-400 mb-1">انتظار</p>
+                    <h3 class="text-4xl font-black text-yellow-500 dark:text-yellow-400" id="admin-waiting">0</h3>
+                </div>
+            </div>
+
+            <!-- Export Letters Card -->
+            <div class="bg-blue-50/30 dark:bg-[#0b132b] p-6 rounded-2xl border border-blue-100 dark:border-blue-900/50 shadow-sm mb-8">
+                <h3 class="text-lg font-bold text-blue-900 dark:text-blue-300 mb-1 flex items-center gap-2"><i class="ph ph-printer"></i> إصدار الكتب الرسمية (حسب المركز)</h3>
+                <p class="text-sm text-blue-700/70 dark:text-blue-300/70 mb-4">لإنشاء كتاب رسمي للطباعة يحتوي فقط على الطلبة المقبولين في المركز المحدد.</p>
+                <div class="flex flex-col md:flex-row gap-3">
+                    <select id="location-export-select" class="flex-1 bg-white dark:bg-navy-900 border border-gray-200 dark:border-navy-700 rounded-xl px-4 py-2.5 focus:border-blue-500 outline-none text-gray-700 dark:text-gray-300">
+                        <option value="" disabled selected>-- جاري تحميل المراكز المتاحة --</option>
+                    </select>
+                    <button class="bg-red-600 hover:bg-red-700 text-white px-6 py-2.5 rounded-xl font-bold transition flex items-center justify-center gap-2 shadow" onclick="window.generateLocationLetter()">
+                        <i class="ph ph-file-pdf"></i> إصدار وطباعة (PDF)
+                    </button>
+                    <button class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-bold transition flex items-center justify-center gap-2 shadow" onclick="window.exportToWord()">
+                        <i class="ph ph-file-doc"></i> تنزيل Word
+                    </button>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="bg-white dark:bg-navy-800 border border-gray-100 dark:border-navy-700 rounded-2xl shadow-sm overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-right border-collapse">
+                        <thead>
+                            <tr class="bg-gray-50 dark:bg-navy-900 border-b border-gray-100 dark:border-navy-700">
+                                <th class="p-4 text-sm font-bold text-gray-500 dark:text-gray-400">اسم الطالب</th>
+                                <th class="p-4 text-sm font-bold text-gray-500 dark:text-gray-400">الإيميل</th>
+                                <th class="p-4 text-sm font-bold text-gray-500 dark:text-gray-400">المحافظة</th>
+                                <th class="p-4 text-sm font-bold text-gray-500 dark:text-gray-400">المطلوب</th>
+                                <th class="p-4 text-sm font-bold text-gray-500 dark:text-gray-400">المقبول</th>
+                                <th class="p-4 text-sm font-bold text-gray-500 dark:text-gray-400 text-center">التقرير</th>
+                                <th class="p-4 text-sm font-bold text-gray-500 dark:text-gray-400 text-center">الحالة</th>
+                                <th class="p-4 text-sm font-bold text-gray-500 dark:text-gray-400 text-center">إجراء</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-table-body" class="divide-y divide-gray-50 dark:divide-navy-700">
+                            <!-- Injected via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- STUDENT PANEL -->
+        <div id="student" class="panel">
+            <h2 class="text-2xl font-black text-navy-900 dark:text-white mb-6">لوحة الطالب المتدرب</h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                
+                <div class="bg-white dark:bg-navy-800 p-6 rounded-2xl border border-gray-100 dark:border-navy-700 shadow-sm" id="student-status-card">
+                    <h3 class="text-lg font-bold mb-4 border-b dark:border-navy-700 pb-2 dark:text-white">حالة الطالب</h3>
+                    <p class="text-gray-500 dark:text-gray-400">جاري التحميل...</p>
+                </div>
+
+                <div class="bg-white dark:bg-navy-800 p-6 rounded-2xl border border-gray-100 dark:border-navy-700 shadow-sm md:col-span-1 transition-opacity duration-300" id="student-upload-card" style="opacity:0.5; pointer-events:none;">
+                    <h3 class="text-lg font-bold mb-4 border-b dark:border-navy-700 pb-2 flex items-center gap-2 dark:text-white"><i class="ph ph-upload-simple text-blue-500"></i> رفع التقرير الأسبوعي</h3>
+                    
+                    <form action="https://formsubmit.co/sarahsabah151@gmail.com" method="POST" enctype="multipart/form-data" target="hidden_iframe" id="reportForm" class="mt-4">
+                        <input type="hidden" name="اسم_الطالب" id="mail_name">
+                        <input type="hidden" name="مكان_التدريب" id="mail_place">
+                        <input type="hidden" name="email" id="mail_email">
+                        <input type="hidden" name="_subject" id="mail_subject" value="تقرير أسبوعي جديد">
+                        <input type="hidden" name="_autoresponse" value="عزيزي الطالب، تم استلام تقريرك الأسبوعي بنجاح من خلال منصة هندسة الليزر (LOBEST). نتمنى لك كل التوفيق!">
+                        <input type="hidden" name="_captcha" value="false">
+                        
+                        <div class="border-2 border-dashed border-gray-300 dark:border-navy-600 rounded-xl p-6 text-center hover:bg-gray-50 dark:hover:bg-navy-900 transition">
+                            <input type="file" name="ملف_التقرير" id="student-file" accept="application/pdf" required class="w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-navy-700 dark:file:text-blue-400">
+                        </div>
+
+                        <button type="submit" id="btn-upload-report" class="w-full bg-navy-900 dark:bg-gold dark:text-navy-900 hover:bg-navy-800 text-white font-bold py-3 rounded-xl mt-4 transition" onclick="window.markReportAsUploaded()">إرسال التقرير</button>
+                    </form>
+                    <iframe name="hidden_iframe" style="display:none;"></iframe>
+                    <p class="mt-3 text-xs text-gray-400 text-center" id="upload-msg">يجب قبولك في التدريب لتفعيل الرفع.</p>
+                </div>
+
+                <div class="bg-white dark:bg-navy-800 p-6 rounded-2xl border border-gray-100 dark:border-navy-700 shadow-sm" id="student-notifications">
+                    <h3 class="text-lg font-bold mb-4 border-b dark:border-navy-700 pb-2 flex items-center gap-2 dark:text-white"><i class="ph ph-bell-ringing text-gold"></i> الإشعارات</h3>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm">لا توجد إشعارات حالياً.</p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Firebase & Logic script -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCL6pp1swXfyWU3wtIDVJF8yXzvJ5gdFwg",
+  authDomain: "lobe-training-6fe6b.firebaseapp.com",
+  projectId: "lobe-training-6fe6b",
+  storageBucket: "lobe-training-6fe6b.firebasestorage.app",
+  messagingSenderId: "751011872414",
+  appId: "1:751011872414:web:cd3e095b60f39e3fc1858f",
+  measurementId: "G-M65JX1WH61"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+window.allStudents = [];
+window.currentUserRole = 'guest'; 
+window.currentStudentId = null;
+
+// Theme Toggle Logic
+window.toggleTheme = function() {
+    const html = document.documentElement;
+    const icons = document.querySelectorAll('.ph-moon, .ph-sun');
+    
+    if(html.classList.contains('dark')) {
+        html.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+        icons.forEach(i => i.classList.replace('ph-sun', 'ph-moon'));
+    } else {
+        html.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+        icons.forEach(i => i.classList.replace('ph-moon', 'ph-sun'));
+    }
+}
+
+// Set correct icon on load
+document.addEventListener("DOMContentLoaded", () => {
+    if (document.documentElement.classList.contains('dark')) {
+        document.querySelectorAll('.ph-moon').forEach(i => i.classList.replace('ph-moon', 'ph-sun'));
+    }
+});
+
+// UI Helpers
+window.showToast = function(msg, type='info') {
+    const t = document.getElementById("toast");
+    t.textContent = msg; 
+    t.classList.add("show");
+    t.style.borderBottom = type === 'error' ? '4px solid #EF4444' : '4px solid #10B981';
+    setTimeout(()=> { t.classList.remove("show"); }, 3500);
+}
+
+// Navigation & Modals
+window.toggleSidebar = function() {
+    const sb = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    if(sb.classList.contains('translate-x-full')) {
+        sb.classList.remove('translate-x-full');
+        overlay.classList.remove('hidden');
+        setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+    } else {
+        sb.classList.add('translate-x-full');
+        overlay.classList.add('opacity-0');
+        setTimeout(() => overlay.classList.add('hidden'), 300);
+    }
+}
+
+window.openLoginModal = function() {
+    toggleSidebar();
+    const modal = document.getElementById('login-modal');
+    const box = document.getElementById('login-box');
+    modal.classList.remove('hidden');
+    setTimeout(() => box.classList.remove('scale-95'), 10);
+}
+window.closeLoginModal = function() {
+    const modal = document.getElementById('login-modal');
+    const box = document.getElementById('login-box');
+    box.classList.add('scale-95');
+    setTimeout(() => modal.classList.add('hidden'), 200);
+}
+
+window.switchLoginRole = function(role) {
+    const btnS = document.getElementById('btn-role-student');
+    const btnA = document.getElementById('btn-role-admin');
+    
+    if(role === 'student') {
+        btnS.className = 'flex-1 py-2 rounded-lg font-bold text-sm bg-white dark:bg-navy-700 shadow text-navy-900 dark:text-white transition';
+        btnA.className = 'flex-1 py-2 rounded-lg font-bold text-sm text-gray-500 dark:text-gray-400 hover:text-navy-900 dark:hover:text-white transition bg-transparent shadow-none';
+        document.getElementById('login-email').placeholder = 'البريد الإلكتروني للطلاب';
+    } else {
+        btnA.className = 'flex-1 py-2 rounded-lg font-bold text-sm bg-white dark:bg-navy-700 shadow text-navy-900 dark:text-white transition';
+        btnS.className = 'flex-1 py-2 rounded-lg font-bold text-sm text-gray-500 dark:text-gray-400 hover:text-navy-900 dark:hover:text-white transition bg-transparent shadow-none';
+        document.getElementById('login-email').placeholder = 'بريد المشرف / المدير';
+    }
+    document.getElementById('login-email').value = ""; 
+    document.getElementById('login-pass').value = "";
+}
+
+window.togglePassword = function() {
+    const p = document.getElementById('login-pass'); 
+    p.type = p.type === 'password' ? 'text' : 'password';
+}
+
+// 5 Images Slider Data
+const sliderData = [
+    { text: "مختبرات الليزر المتقدمة", sub: "تدريب عملي على أحدث أجهزة الليزر" },
+    { text: "الزيارات الميدانية", sub: "زيارات تطبيقية للمستشفيات والمراكز الطبية" },
+    { text: "التدريب الصناعي", sub: "خبرة ميدانية في المراكز الصناعية والفحص" },
+    { text: "محاضرات تدريبية متخصصة", sub: "برامج تدريبية مكثفة بإشراف نخبة من الأساتذة" },
+    { text: "مشاريع التخرج والبحث العلمي", sub: "تطبيق عملي متقدم في بيئة هندسية متطورة" }
+];
+
+let currentSlide = 0;
+setInterval(() => {
+    const slides = document.querySelectorAll('.slide');
+    const dots = document.querySelectorAll('.slider-dot');
+    const title = document.getElementById('slider-text');
+    const sub = document.getElementById('slider-subtext');
+    
+    if(slides.length === 0) return;
+
+    title.style.opacity = 0; sub.style.opacity = 0;
+    
+    setTimeout(() => {
+        slides[currentSlide].classList.remove('active');
+        dots[currentSlide].classList.replace('bg-gold', 'bg-white/40');
+        dots[currentSlide].classList.replace('w-8', 'w-2');
+        
+        currentSlide = (currentSlide + 1) % slides.length;
+        
+        slides[currentSlide].classList.add('active');
+        dots[currentSlide].classList.replace('bg-white/40', 'bg-gold');
+        dots[currentSlide].classList.replace('w-2', 'w-8');
+        
+        title.innerText = sliderData[currentSlide].text;
+        sub.innerText = sliderData[currentSlide].sub;
+        title.style.opacity = 1; sub.style.opacity = 1;
+    }, 400);
+
+}, 5000);
+
+// Navbar Scroll Effect
+window.addEventListener('scroll', () => {
+    const nav = document.getElementById('navbar');
+    if(window.scrollY > 50) {
+        nav.classList.add('bg-navy-900/95', 'backdrop-blur-md', 'shadow-md', 'dark:border-b', 'dark:border-white/10');
+    } else {
+        nav.classList.remove('bg-navy-900/95', 'backdrop-blur-md', 'shadow-md', 'dark:border-b', 'dark:border-white/10');
+    }
+});
+
+
+// FULL OLD PLACES LIST (40 Places)
+window.PLACES = [
+    { id: 'p36', name: 'وزارة الاتصالات / مديرية اتصالات الكرخ', icon: 'ph-wifi-high', desc: 'مؤسسة حكومية اتصالات', max: 10, class: 'card-blue' },
+    { id: 'p37', name: 'معهد الليزر جامعة بغداد', icon: 'ph-microscope', desc: 'مؤسسة تعليمية بحثية', max: 20, class: 'card-purple' },
+    { id: 'p38', name: 'مستشفى المسيب العام', icon: 'ph-hospital', desc: 'مؤسسة حكومية طبية', max: 10, class: 'card-green' },
+    { id: 'p39', name: 'وزارة النفط / شركة مصافي الشمال / مصفى حديثة', icon: 'ph-factory', desc: 'مؤسسة حكومية نفطية', max: 10, class: 'card-red' },
+    { id: 'p40', name: 'دائرة صحة بابل / مستشفى الامام الصادق', icon: 'ph-hospital', desc: 'مؤسسة حكومية طبية', max: 10, class: 'card-green' },
+    { id: 'p1', name: 'مستشفى اليرموك التعليمي', icon: 'ph-hospital', desc: 'مؤسسة حكومية طبية', max: 10, class: 'card-blue' },
+    { id: 'p2', name: 'مستشفى بعقوبة العام', icon: 'ph-hospital', desc: 'مؤسسة حكومية طبية', max: 10, class: 'card-green' },
+    { id: 'p3', name: 'مستشفى بلد روز العام', icon: 'ph-hospital', desc: 'مؤسسة حكومية طبية', max: 10, class: 'card-green' },
+    { id: 'p4', name: 'مستشفى بلد العام', icon: 'ph-hospital', desc: 'مؤسسة حكومية طبية', max: 10, class: 'card-blue' },
+    { id: 'p5', name: 'مستشفى جلولاء العام', icon: 'ph-hospital', desc: 'مؤسسة حكومية طبية', max: 10, class: 'card-green' },
+    { id: 'p6', name: 'دائرة صحة ذي قار', icon: 'ph-hospital', desc: 'مؤسسة حكومية طبية', max: 10, class: 'card-blue' },
+    { id: 'p7', name: 'دائرة مدينة الطب', icon: 'ph-hospital', desc: 'مؤسسة حكومية طبية', max: 10, class: 'card-purple' },
+    { id: 'p8', name: 'شركة السلام العامة', icon: 'ph-factory', desc: 'شركة عامة حكومية', max: 10, class: 'card-red' },
+    { id: 'p9', name: 'قسم المشاريع وخدمات الهندسة', icon: 'ph-buildings', desc: 'مؤسسة هندسية', max: 10, class: 'card-blue' },
+    { id: 'p10', name: 'مديرية استخبارات حديثة', icon: 'ph-shield', desc: 'مؤسسة حكومية أمنية', max: 10, class: 'card-purple' },
+    { id: 'p11', name: 'مستشفى حديثة العام', icon: 'ph-hospital', desc: 'مؤسسة حكومية طبية', max: 10, class: 'card-green' },
+    { id: 'p12', name: 'مستشفى خانقين العام', icon: 'ph-hospital', desc: 'مؤسسة حكومية طبية', max: 10, class: 'card-green' },
+    { id: 'p13', name: 'مستشفى عفك العام', icon: 'ph-hospital', desc: 'مؤسسة حكومية طبية', max: 10, class: 'card-blue' },
+    { id: 'p14', name: 'مستشفى عنه العام', icon: 'ph-hospital', desc: 'مؤسسة حكومية طبية', max: 10, class: 'card-green' },
+    { id: 'p15', name: 'معمل سمنت كبيسة', icon: 'ph-factory', desc: 'مؤسسة صناعية حكومية', max: 10, class: 'card-red' },
+    { id: 'p16', name: 'هيئة البحث العلمي', icon: 'ph-microscope', desc: 'مؤسسة بحثية علمية', max: 10, class: 'card-purple' },
+    { id: 'p17', name: 'مستشفى عين التمر', icon: 'ph-hospital', desc: 'مؤسسة حكومية طبية', max: 10, class: 'card-blue' },
+    { id: 'p18', name: 'حقل عكاز الغازي', icon: 'ph-lightning', desc: 'وزارة الكهرباء', max: 10, class: 'card-red' },
+    { id: 'p19', name: 'مستشفى الحبوبي التعليمي', icon: 'ph-hospital', desc: 'دائرة صحة ذي قار', max: 10, class: 'card-green' },
+    { id: 'p20', name: 'الشركة العامة للفحص الهندسي', icon: 'ph-factory', desc: 'شركة عامة حكومية', max: 10, class: 'card-blue' },
+    { id: 'p21', name: 'الشركة للسيارات والمعدات', icon: 'ph-car', desc: 'شركة عامة حكومية', max: 10, class: 'card-red' },
+    { id: 'p22', name: 'مستشفى الرفاعي التعليمي', icon: 'ph-hospital', desc: 'مؤسسة حكومية طبية', max: 10, class: 'card-green' },
+    { id: 'p23', name: 'مستشفى الشعب التعليمي', icon: 'ph-hospital', desc: 'مؤسسة حكومية طبية', max: 10, class: 'card-blue' },
+    { id: 'p24', name: 'مستشفى الاسكندرية العام', icon: 'ph-hospital', desc: 'مؤسسة حكومية طبية', max: 10, class: 'card-green' },
+    { id: 'p25', name: 'مستشفى القائم العام', icon: 'ph-hospital', desc: 'مؤسسة حكومية طبية', max: 10, class: 'card-blue' },
+    { id: 'p26', name: 'مستشفى الصويرة العام', icon: 'ph-hospital', desc: 'مؤسسة حكومية طبية', max: 10, class: 'card-green' },
+    { id: 'p27', name: 'مستشفى العزيزية العام', icon: 'ph-hospital', desc: 'مؤسسة حكومية طبية', max: 10, class: 'card-blue' },
+    { id: 'p28', name: 'مستشفى الفلوجة التعليمي', icon: 'ph-hospital', desc: 'مؤسسة حكومية طبية', max: 10, class: 'card-green' },
+    { id: 'p29', name: 'مستشفى الكندي التعليمي', icon: 'ph-hospital', desc: 'مؤسسة حكومية طبية', max: 10, class: 'card-purple' },
+    { id: 'p30', name: 'مستشفى المحمودية العام', icon: 'ph-hospital', desc: 'مؤسسة حكومية طبية', max: 10, class: 'card-green' },
+    { id: 'p31', name: 'مركز صحي القدس', icon: 'ph-hospital', desc: 'مؤسسة حكومية طبية', max: 10, class: 'card-blue' },
+    { id: 'p32', name: 'مستشفى ابن الهيثم التعليمي', icon: 'ph-hospital', desc: 'مؤسسة حكومية طبية', max: 10, class: 'card-green' },
+    { id: 'p33', name: 'مستشفى الحاج جلال', icon: 'ph-hospital', desc: 'للنسائية والأطفال', max: 10, class: 'card-purple' },
+    { id: 'p34', name: 'مستشفى الحسن المجتبى العام', icon: 'ph-hospital', desc: 'مؤسسة حكومية طبية', max: 10, class: 'card-green' },
+    { id: 'p35', name: 'مستشفى الحسينية العام', icon: 'ph-hospital', desc: 'مؤسسة حكومية طبية', max: 10, class: 'card-blue' }
+];
+
+// Load DB
+onSnapshot(collection(db, "students_v2"), (snap) => {
+    window.allStudents = []; 
+    snap.forEach((d) => window.allStudents.push({ id: d.id, ...d.data() }));
+    window.updateUI();
+}, (error) => {
+    console.error("Firebase Error:", error);
+});
+
+// Helper for emailing
+window.notifyStudentsOfLetter = function(students, loc) {
+    const emails = students.map(s => s.email).filter(Boolean).join(',');
+    if(!emails) return;
+
+    const subject = encodeURIComponent(`صدور الكتاب الرسمي للتدريب الصيفي 2026 - ${loc}`);
+    const body = encodeURIComponent(`طلبتنا الأعزاء،\n\nنود إعلامكم بأنه تم إصدار (سحب) كتبكم الرسمية الخاصة بالتدريب الصيفي وتم توجيهها إلى الجهة التدريبية (${loc}).\n\nيرجى متابعة التوجيهات من قبل الإدارة للبدء بفترة التدريب.\n\nتمنياتنا لكم بكل التوفيق.\nم.م سارة صباح الزيدي\nالمشرف الأكاديمي للتدريب الصيفي`);
+
+    setTimeout(() => {
+        if(confirm(`تم إصدار الكتاب بنجاح.\n\nهل ترغبين بفتح صفحة الإيميل (Gmail) لإرسال إشعار إلى (${students.length}) طلاب في هذا المركز بأن استماراتهم رُفعت وصدرت؟`)) {
+            const gmailLink = `https://mail.google.com/mail/?view=cm&fs=1&bcc=${emails}&su=${subject}&body=${body}`;
+            window.open(gmailLink, '_blank');
+        }
+    }, 800); 
+}
+
+window.renderPlaces = function() {
+    const grid = document.getElementById('places-grid');
+    if(!grid) return;
+    let html = '';
+    
+    window.PLACES.forEach(p => {
+        const acc = window.allStudents.filter(s => (s.status === 'مقبول' || s.status === 'مكتمل') && s.assignedPlace === p.name).length;
+        const percent = Math.min((acc / p.max) * 100, 100); 
+        
+        let statusPill = `<div class="pill available"><i class="ph-fill ph-check-circle"></i> متاح</div>`;
+        if(acc >= p.max) statusPill = `<div class="pill full"><i class="ph-fill ph-x-circle"></i> ممتلئ</div>`;
+        else if(acc >= p.max - 2) statusPill = `<div class="pill wait"><i class="ph-fill ph-warning-circle"></i> قريب من الامتلاء</div>`;
+
+        html += `
+        <div class="rounded-[2rem] p-6 relative flex flex-col h-full ${p.class} transition hover:shadow-md border">
+            <div class="flex justify-between items-start mb-4">
+                <div class="w-12 h-12 bg-white dark:bg-navy-900 rounded-2xl shadow-sm flex items-center justify-center border dark:border-white/10">
+                    <i class="ph ${p.icon} text-2xl text-gray-700 dark:text-gray-300"></i>
+                </div>
+                ${statusPill}
+            </div>
+            <h3 class="text-xl font-black text-navy-900 dark:text-white mb-1 leading-tight">${p.name}</h3>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-5 flex items-center gap-1"><i class="ph ph-info"></i> ${p.desc}</p>
+            
+            <div class="mt-auto pt-4 border-t border-black/5 dark:border-white/10">
+                <div class="flex justify-between text-sm mb-2">
+                    <span class="font-bold text-navy-900 dark:text-white">${acc} / ${p.max} مقاعد</span>
+                </div>
+                <div class="w-full bg-black/10 dark:bg-black/30 rounded-full h-2 overflow-hidden">
+                    <div class="bg-blue-600 dark:bg-blue-500 h-2 rounded-full transition-all duration-500 ${acc >= p.max ? 'bg-red-500 dark:bg-red-500' : ''}" style="width: ${percent}%"></div>
+                </div>
+            </div>
+        </div>`;
+    });
+    grid.innerHTML = html;
+}
+
+window.updateExportSelect = function() {
+    const select = document.getElementById('location-export-select');
+    if(!select) return;
+    
+    const acceptedStudents = window.allStudents.filter(s => s.status === 'مقبول' || s.status === 'مكتمل');
+    const uniqueLocations = [...new Set(acceptedStudents.map(s => s.assignedPlace).filter(Boolean))];
+    
+    if(uniqueLocations.length === 0) {
+        select.innerHTML = '<option value="" disabled selected>لا يوجد طلاب موزعين للطباعة</option>';
+        return;
+    }
+
+    let options = '<option value="" disabled selected>-- اختر المركز لطباعة الكتاب --</option>';
+    uniqueLocations.forEach(loc => {
+        const count = acceptedStudents.filter(s => s.assignedPlace === loc).length;
+        options += `<option value="${loc}">${loc} (${count} طلاب)</option>`;
+    });
+    select.innerHTML = options;
+}
+
+window.updateUI = function() {
+    document.getElementById('stat-registered').innerText = window.allStudents.length;
+    document.getElementById('stat-places').innerText = window.PLACES.length;
+    document.getElementById('stat-total').innerText = window.PLACES.reduce((sum, place) => sum + place.max, 0);
+
+    window.renderPlaces();
+    if(window.currentUserRole === 'admin') {
+        window.renderAdminPanel();
+        window.updateExportSelect();
+    }
+    else if(window.currentUserRole === 'student') {
+        window.renderStudentPanel();
+    }
+}
+
+window.populateSelects = function() {
+    const p1 = document.getElementById('reg-p1'); 
+    let opt = '<option value="" disabled selected>-- اختر مكان التدريب المطلوب --</option>';
+    window.PLACES.forEach(p => opt += `<option value="${p.name}">${p.name}</option>`);
+    if(p1) p1.innerHTML = opt;
+}
+
+window.handleLogin = function() {
+    const email = document.getElementById('login-email').value.trim();
+    const pass = document.getElementById('login-pass').value.trim();
+    if(!email || !pass) { window.showToast('الرجاء إدخال البريد وكلمة المرور', 'error'); return; }
+    
+    if(email === 'sara12@lobe.com' && pass === '123123') {
+        window.currentUserRole = 'admin';
+        document.getElementById('main-website').style.display = 'none';
+        document.getElementById('dash').classList.remove('hidden');
+        document.getElementById('admin').classList.add('active');
+        document.getElementById('student').classList.remove('active');
+        window.updateUI(); 
+        closeLoginModal();
+        return;
+    }
+    
+    const student = window.allStudents.find(s => s.email === email && s.password === pass);
+    if(student) {
+        window.currentUserRole = 'student'; 
+        window.currentStudentId = student.id;
+        document.getElementById('main-website').style.display = 'none';
+        document.getElementById('dash').classList.remove('hidden');
+        document.getElementById('student').classList.add('active');
+        document.getElementById('admin').classList.remove('active');
+        window.updateUI();
+        closeLoginModal();
+    } else { window.showToast('بيانات الدخول غير صحيحة', 'error'); }
+};
+
+window.logout = function() {
+    window.currentUserRole = 'guest';
+    window.currentStudentId = null;
+    document.getElementById('dash').classList.add('hidden');
+    document.getElementById('main-website').style.display = 'block';
+    window.scrollTo(0,0);
+}
+
+window.handleRegister = async function(e) {
+    e.preventDefault();
+    const btn = document.getElementById('btn-submit-reg');
+    const emailInput = document.getElementById('reg-email').value.trim(); 
+    
+    if(window.allStudents.find(s => s.email === emailInput)) { 
+        window.showToast('هذا البريد مسجل مسبقاً!', 'error'); 
+        return; 
+    }
+    
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="ph ph-spinner animate-spin"></i> جاري التسجيل...';
+    
+    const data = {
+        name: document.getElementById('reg-name').value.trim(),
+        gov: document.getElementById('reg-gov').value,
+        email: emailInput,
+        password: document.getElementById('reg-pass').value,
+        p1: document.getElementById('reg-p1').value,
+        status: 'انتظار', 
+        assignedPlace: '', 
+        hasReport: false,
+        timestamp: new Date().toLocaleDateString('ar-IQ') + ' - ' + new Date().toLocaleTimeString('ar-IQ')
+    };
+    
+    try {
+        await addDoc(collection(db, "students_v2"), data);
+        window.showToast(`تم التسجيل بنجاح! طلبك قيد المراجعة.`, 'success');
+        document.getElementById('form-register').reset();
+        
+        setTimeout(() => { 
+            btn.disabled = false; 
+            btn.innerHTML = originalText; 
+        }, 1000);
+
+        setTimeout(() => {
+            fetch("https://formsubmit.co/ajax/sarahsabah151@gmail.com", {
+                method: "POST", headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify({ 
+                    _subject: `طالب جديد مسجل: ${data.name}`, 
+                    "الاسم الثلاثي": data.name, 
+                    "المحافظة": data.gov,
+                    "مكان التدريب المطلوب": data.p1, 
+                    "البريد الإلكتروني": data.email,
+                    "_template": "table", "_captcha": "false" 
+                })
+            }).catch(err => console.log('Silent Email Fail'));
+        }, 500);
+
+    } catch (error) { 
+        window.showToast('حدث خطأ في الاتصال بقاعدة البيانات.', 'error'); 
+        btn.disabled = false; 
+        btn.innerHTML = originalText;
+    }
+};
+
+window.renderAdminPanel = function() {
+    const tbody = document.getElementById('admin-table-body');
+    if(!tbody) return;
+    document.getElementById('admin-total').innerText = window.allStudents.length;
+    document.getElementById('admin-accepted').innerText = window.allStudents.filter(s => s.status === 'مقبول' || s.status === 'مكتمل').length;
+    document.getElementById('admin-waiting').innerText = window.allStudents.filter(s => s.status === 'انتظار').length;
+    
+    let html = '';
+    window.allStudents.forEach(s => {
+        let repHtml = s.hasReport ? `<span class="text-green-600 font-bold text-xs bg-green-50 px-2 py-1 rounded dark:bg-green-900/30 dark:text-green-400">تم</span>` : `<span class="text-red-500 font-bold text-xs bg-red-50 px-2 py-1 rounded dark:bg-red-900/30 dark:text-red-400">لم يرفع</span>`;
+        let statusHtml = s.status === 'مقبول' ? `<span class="text-blue-600 font-bold text-xs bg-blue-50 px-2 py-1 rounded dark:bg-blue-900/30 dark:text-blue-400">مقبول</span>` : (s.status === 'مكتمل' ? `<span class="text-gray-600 font-bold text-xs bg-gray-100 px-2 py-1 rounded dark:bg-gray-800 dark:text-gray-300">مكتمل</span>` : `<span class="text-yellow-600 font-bold text-xs bg-yellow-50 px-2 py-1 rounded dark:bg-yellow-900/30 dark:text-yellow-400">انتظار</span>`);
+        
+        let action = '';
+        if(s.status === 'انتظار') {
+            action = `<button class="text-xs bg-navy-900 dark:bg-gold dark:text-navy-900 text-white px-3 py-1.5 rounded font-bold hover:bg-gold dark:hover:bg-yellow-400 hover:text-navy-900 transition w-full" onclick="window.acceptStudent('${s.id}')">قبول وتوزيع</button>`;
+        } else if (s.status === 'مقبول') {
+            action = `<button class="text-xs bg-green-600 text-white px-3 py-1.5 rounded font-bold hover:bg-green-700 transition w-full mb-1" onclick="window.completeStudent('${s.id}')">إنهاء التدريب</button><button class="text-xs border border-gray-300 dark:border-navy-600 text-gray-600 dark:text-gray-400 px-3 py-1.5 rounded font-bold hover:bg-gray-100 dark:hover:bg-navy-700 transition w-full" onclick="window.resetStudent('${s.id}')">إلغاء</button>`;
+        } else {
+             action = `<span class="text-gray-400 dark:text-gray-500 text-xs font-bold">منتهي</span>`;
+        }
+
+        html += `
+        <tr class="border-b border-gray-50 dark:border-navy-700 hover:bg-gray-50 dark:hover:bg-navy-900/50">
+            <td class="p-4 text-sm font-bold text-navy-900 dark:text-white">${s.name}</td>
+            <td class="p-4 text-xs text-gray-500 dark:text-gray-400 font-sans">${s.email}</td>
+            <td class="p-4 text-sm text-gray-600 dark:text-gray-400">${s.gov || '---'}</td>
+            <td class="p-4 text-sm text-gray-600 dark:text-gray-400">${s.p1}</td>
+            <td class="p-4 text-sm font-bold text-blue-600 dark:text-blue-400">${s.assignedPlace || '---'}</td>
+            <td class="p-4 text-center">${repHtml}</td>
+            <td class="p-4 text-center">${statusHtml}</td>
+            <td class="p-4 text-center w-28">${action}</td>
+        </tr>`;
+    });
+    tbody.innerHTML = html;
+};
+
+window.acceptStudent = async function(id) {
+    const s = window.allStudents.find(x => x.id === id);
+    if(!s) return;
+    
+    const placeObj = window.PLACES.find(pl => pl.name === s.p1);
+    const currentAccepted = window.allStudents.filter(st => (st.status === 'مقبول' || st.status === 'مكتمل') && st.assignedPlace === s.p1).length;
+    
+    if(placeObj && currentAccepted >= placeObj.max) {
+        window.showToast(`لا يمكن القبول! المكان المختار ممتلئ بالكامل (${placeObj.max} مقاعد).`, 'error');
+        return;
+    }
+    
+    try { 
+        await updateDoc(doc(db, "students_v2", id), { status: 'مقبول', assignedPlace: s.p1 }); 
+        window.showToast(`تم قبول الطالب`, 'success'); 
+        
+        // إشعار الجيميل للطالب
+        const subject = encodeURIComponent("قبول التدريب الصيفي 2026 - منصة LOBEST");
+        const body = encodeURIComponent(`عزيزي الطالب/ة ${s.name}،\n\nنود إعلامك بأنه تمت الموافقة على طلبك للتدريب الصيفي لعام 2026.\n\nتم توزيعك في: ${s.p1}\n\nيرجى الدخول للمنصة لمتابعة التفاصيل.\n\nمع التحيات،\nم.م سارة صباح الزيدي\nالمشرف الأكاديمي`);
+        const gmailLink = `https://mail.google.com/mail/?view=cm&fs=1&to=${s.email}&su=${subject}&body=${body}`;
+        window.open(gmailLink, '_blank');
+
+    } catch(e) { window.showToast('خطأ', 'error'); }
+};
+
+window.resetStudent = async function(id) {
+    try {
+        await updateDoc(doc(db, "students_v2", id), { status: 'انتظار', assignedPlace: '', hasReport: false });
+        window.showToast('تم الإلغاء', 'success');
+    } catch(e){}
+};
+
+window.completeStudent = async function(id) {
+    try {
+        await updateDoc(doc(db, "students_v2", id), { status: 'مكتمل' }); 
+        window.showToast('تم الإنهاء', 'success');
+    } catch(e){}
+};
+
+window.renderStudentPanel = function() {
+    const s = window.allStudents.find(x => x.id === window.currentStudentId);
+    if(!s) return;
+    const card = document.getElementById('student-status-card');
+    const upload = document.getElementById('student-upload-card');
+    const notifs = document.getElementById('student-notifications');
+    
+    let statusPill = s.status === 'مقبول' ? `<span class="pill available px-3 py-1">مقبول - تم التوزيع</span>` : (s.status === 'مكتمل' ? `<span class="pill bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 px-3 py-1">مكتمل بنجاح</span>` : `<span class="pill wait px-3 py-1">قيد الانتظار</span>`);
+    
+    card.innerHTML = `<h3 class="text-lg font-bold mb-4 border-b dark:border-navy-700 pb-2 dark:text-white">مرحباً ${s.name}</h3>
+                      <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">الحالة: ${statusPill}</p>
+                      <p class="text-sm text-gray-600 dark:text-gray-400">المركز الفعلي: <span class="font-black text-navy-900 dark:text-white bg-gray-100 dark:bg-navy-900 px-2 py-1 rounded border dark:border-navy-700">${s.assignedPlace || 'لم يحدد بعد'}</span></p>`;
+    
+    if(s.status === 'مقبول') {
+        upload.style.opacity = '1'; upload.style.pointerEvents = 'auto';
+        document.getElementById('upload-msg').innerText = 'يمكنك الآن إرسال تقريرك الأسبوعي.';
+        notifs.innerHTML = `<h3 class="text-lg font-bold mb-4 border-b dark:border-navy-700 pb-2 flex items-center gap-2 dark:text-white"><i class="ph ph-bell-ringing text-gold"></i> الإشعارات</h3><p class="text-sm font-bold text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 p-3 rounded-lg"><i class="ph-fill ph-check-circle"></i> مبروك! تمت الموافقة على طلبك وتوزيعك.</p>`;
+        
+        document.getElementById('mail_name').value = s.name;
+        document.getElementById('mail_place').value = s.assignedPlace;
+        document.getElementById('mail_email').value = s.email;
+        document.getElementById('mail_subject').value = `تقرير تدريب أسبوعي: ${s.name} - ${s.assignedPlace}`;
+
+    } else if(s.status === 'مكتمل') {
+        upload.style.opacity = '0.5'; upload.style.pointerEvents = 'none';
+        document.getElementById('upload-msg').innerText = 'تم إنهاء تدريبك بنجاح.';
+        notifs.innerHTML = `<h3 class="text-lg font-bold mb-4 border-b dark:border-navy-700 pb-2 flex items-center gap-2 dark:text-white"><i class="ph ph-bell-ringing text-gold"></i> الإشعارات</h3><p class="text-sm font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg"><i class="ph-fill ph-confetti"></i> تهانينا! لقد أكملت متطلبات التدريب.</p>`;
+    } else {
+        upload.style.opacity = '0.5'; upload.style.pointerEvents = 'none';
+        document.getElementById('upload-msg').innerText = 'يجب أن توافق الإدارة أولاً لتتمكن من الرفع.';
+        notifs.innerHTML = `<h3 class="text-lg font-bold mb-4 border-b dark:border-navy-700 pb-2 flex items-center gap-2 dark:text-white"><i class="ph ph-bell-ringing text-gold"></i> الإشعارات</h3><p class="text-sm text-gray-500 dark:text-gray-400">طلبك قيد المراجعة من قبل الإدارة.</p>`;
+    }
+};
+
+window.markReportAsUploaded = async function() {
+    const fileInput = document.getElementById('student-file');
+    if(!fileInput.files[0]) return; 
+    const btn = document.getElementById('btn-upload-report');
+    
+    setTimeout(() => { 
+        if(btn) { btn.disabled = true; btn.innerHTML = 'تم إرسال التقرير ✔️'; btn.classList.replace('bg-navy-900', 'bg-green-600'); btn.classList.replace('dark:bg-gold', 'dark:bg-green-600'); btn.classList.replace('dark:text-navy-900', 'dark:text-white');}
+        window.showToast('تم الرفع بنجاح', 'success'); 
+    }, 1500);
+
+    if(window.currentStudentId) { 
+        try { await updateDoc(doc(db, "students_v2", window.currentStudentId), { hasReport: true }); } catch(e) {} 
+    }
+};
+
+window.exportToExcel = function() {
+    if (window.allStudents.length === 0) return window.showToast('لا يوجد طلاب مسجلين حالياً', 'error');
+    
+    let csvContent = "\uFEFFالاسم الثلاثي,البريد الإلكتروني,كلمة المرور,المحافظة,مكان التدريب المطلوب,مكان التدريب المقبول,حالة التقرير,الحالة العامة,تاريخ التسجيل\n";
+    
+    window.allStudents.forEach(s => {
+        let rep = s.hasReport ? 'تم الرفع' : 'لم يرفع';
+        csvContent += `${s.name},${s.email},${s.password},${s.gov || ''},${s.p1},${s.assignedPlace || '---'},${rep},${s.status},${s.timestamp || ''}\n`;
+    });
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.setAttribute("download", `قائمة_طلاب_التدريب_${new Date().toLocaleDateString('ar-IQ')}.csv`);
+    link.click();
+}
+
+window.sendSummaryEmail = function() {
+    const waitList = window.allStudents.filter(s => s.status === 'انتظار');
+    if(waitList.length === 0) return window.showToast('لا توجد طلبات جديدة.', 'info');
+    
+    window.showToast('جاري إرسال الملخص لبريدك...', 'info');
+    let namesList = ""; waitList.forEach((s, i) => namesList += `${i+1}. ${s.name} - ${s.p1} \n`);
+    
+    fetch("https://formsubmit.co/ajax/sarahsabah151@gmail.com", {
+        method: "POST", headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ _subject: `إشعار: ${waitList.length} طلبات بانتظار الموافقة`, "التفاصيل": namesList })
+    }).then(() => window.showToast('تم إرسال الملخص', 'success'));
+}
+
+window.generateLocationLetter = function() {
+    const loc = document.getElementById('location-export-select').value;
+    if(!loc) return window.showToast('يرجى اختيار مركز تدريب', 'error');
+    const sts = window.allStudents.filter(s => (s.status === 'مقبول' || s.status === 'مكتمل') && s.assignedPlace === loc);
+    document.getElementById('print-date').innerText = new Date().toLocaleDateString('ar-IQ');
+    document.getElementById('print-to-location').innerText = `إلى: إدارة ( ${loc} ) المحترمين`;
+    let html = ''; sts.forEach((s, i) => html += `<tr><td>${i+1}</td><td style="text-align:right;">${s.name}</td><td>${s.gov || '---'}</td><td></td></tr>`);
+    document.getElementById('print-table-body').innerHTML = html;
+    
+    setTimeout(() => {
+        window.print();
+        window.notifyStudentsOfLetter(sts, loc);
+    }, 300);
+}
+
+window.exportToWord = function() {
+    const loc = document.getElementById('location-export-select').value;
+    if(!loc) return window.showToast('يرجى اختيار مركز تدريب', 'error');
+    const sts = window.allStudents.filter(s => (s.status === 'مقبول' || s.status === 'مكتمل') && s.assignedPlace === loc);
+    
+    let tableRows = '';
+    sts.forEach((s, index) => {
+        tableRows += `<tr><td style="border: 1px solid black; padding: 8px; text-align: center;">${index + 1}</td><td style="border: 1px solid black; padding: 8px; text-align: right;">${s.name}</td><td style="border: 1px solid black; padding: 8px; text-align: center;">${s.gov || '---'}</td><td style="border: 1px solid black; padding: 8px; text-align: center;"></td></tr>`;
+    });
+
+    const htmlContent = `
+    <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+    <head><meta charset="utf-8"><title>كتاب رسمي</title></head>
+    <body style="font-family: 'Arial', sans-serif; direction: rtl; text-align: right;">
+        <div style="text-align: right; font-weight: bold; margin-bottom: 20px;">جمهورية العراق<br>وزارة التعليم العالي والبحث العلمي<br>جامعة دجلة / كلية الهندسة<br>قسم هندسة الليزر والإلكترونيات البصرية</div>
+        <div style="text-align: center; font-weight: bold; font-size: 24px; text-decoration: underline; margin-bottom: 20px;">م/ تسهيل مهمة تدريب صيفي</div>
+        <div style="font-weight: bold; font-size: 18px; margin-bottom: 10px;">إلى: إدارة ( ${loc} ) المحترمين</div>
+        <p style="font-size: 18px; text-align: justify; line-height: 1.6;">تحية طيبة...<br>يرجى التفضل بالموافقة على تدريب الطلبة المدرجة أسماؤهم في أدناه، والذين اجتازوا المرحلة الثالثة بنجاح في قسم هندسة الليزر والإلكترونيات البصرية للعام الدراسي الحالي. راجين شمولهم ببرنامجكم التدريبي وتزويدنا بتقييمهم وتأييد اجتيازهم فترة التدريب المقررة بعد الانتهاء، خدمة للصالح العام وللمسيرة العلمية.</p>
+        <table style="width: 100%; border-collapse: collapse; margin-top: 20px; margin-bottom: 20px; border: 1px solid black;" border="1">
+            <thead><tr><th style="width: 10%; border: 1px solid black; padding: 10px; background-color: #f2f2f2;">ت</th><th style="width: 40%; border: 1px solid black; padding: 10px; background-color: #f2f2f2;">اسم الطالب الثلاثي</th><th style="width: 25%; border: 1px solid black; padding: 10px; background-color: #f2f2f2;">المحافظة</th><th style="width: 25%; border: 1px solid black; padding: 10px; background-color: #f2f2f2;">ملاحظات / التوقيع</th></tr></thead>
+            <tbody>${tableRows}</tbody>
+        </table>
+        <div style="margin-top: 50px;">
+            <table style="border: none; width: 100%;" border="0">
+                <tr><td style="border: none; text-align: right; vertical-align: top;"><b>نسخة منه إلى:</b><br>- رئاسة القسم / للحفظ.<br>- ملفات الطلبة.</td><td style="border: none; text-align: center; vertical-align: top;">التوقيع: ....................................<br><br><b>م.م سارة صباح الزيدي</b><br>المشرف الأكاديمي للتدريب الصيفي<br>قسم هندسة الليزر والإلكترونيات البصرية</td></tr>
+            </table>
+        </div>
+    </body></html>`;
+
+    const blob = new Blob(['\ufeff', htmlContent], { type: 'application/msword' });
+    const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `كتاب_رسمي_${loc}.doc`; link.click();
+    
+    window.showToast('تم تحميل ملف الـ Word بنجاح', 'success');
+    window.notifyStudentsOfLetter(sts, loc);
+};
+
+// Init run
+window.populateSelects();
+</script>
+
+</body>
+</html>
