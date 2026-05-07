@@ -10,6 +10,9 @@
     
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- HLS.js for Live Stream -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -48,9 +51,13 @@
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         .dark ::-webkit-scrollbar-thumb:hover { background: #4B5563; }
 
-        /* Hero Slider Transitions */
-        .slide { opacity: 0; transition: opacity 0.8s ease-in-out, transform 0.8s ease-in-out; position: absolute; inset: 0; transform: scale(1.05); }
-        .slide.active { opacity: 1; z-index: 10; transform: scale(1); }
+        /* Hero Slider Transitions & Animation */
+        .slide { opacity: 0; transition: opacity 1s ease-in-out; position: absolute; inset: 0; }
+        .slide.active { opacity: 1; z-index: 10; animation: zoomIn 6s linear forwards; }
+        @keyframes zoomIn {
+            from { transform: scale(1); }
+            to { transform: scale(1.1); }
+        }
         
         /* Pastel Card Colors (Light Mode) */
         .card-green { background-color: #F0FDF4; border: 1px solid #DCFCE7; }
@@ -192,6 +199,8 @@
                 <a href="#register" onclick="toggleSidebar()" class="py-3 px-4 rounded-lg hover:bg-gray-100 dark:hover:bg-navy-700 font-bold text-gray-800 dark:text-gray-200">التسجيل</a>
                 <a href="#reports" onclick="toggleSidebar()" class="py-3 px-4 rounded-lg hover:bg-gray-100 dark:hover:bg-navy-700 font-bold text-gray-800 dark:text-gray-200">التقارير</a>
                 <a href="#contact" onclick="toggleSidebar()" class="py-3 px-4 rounded-lg hover:bg-gray-100 dark:hover:bg-navy-700 font-bold text-gray-800 dark:text-gray-200">التواصل</a>
+                <hr class="my-2 border-gray-200 dark:border-white/10">
+                <a href="#" onclick="openLiveStream(); toggleSidebar();" class="py-3 px-4 rounded-lg bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400 font-bold flex items-center gap-2 hover:bg-red-100 transition"><i class="ph-fill ph-broadcast text-xl animate-pulse"></i> بث قناة دجلة مباشر</a>
             </nav>
         </div>
         <div class="p-4 border-t dark:border-white/10">
@@ -233,6 +242,26 @@
                     </div>
                 </div>
                 <button onclick="window.handleLogin()" class="w-full py-3.5 bg-gold text-navy-900 rounded-xl font-bold text-lg hover:bg-yellow-400 transition shadow-lg mt-2">دخول للمنصة</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Live Stream Modal -->
+    <div id="live-modal" class="fixed inset-0 z-[80] hidden flex items-center justify-center">
+        <div class="absolute inset-0 bg-black/90 backdrop-blur-sm" onclick="closeLiveStream()"></div>
+        <div class="bg-navy-900 w-full max-w-4xl rounded-3xl shadow-2xl relative z-10 overflow-hidden border border-white/10 mx-4" id="live-box">
+            <div class="flex justify-between items-center p-4 bg-black border-b border-white/10">
+                <div class="flex items-center gap-3">
+                    <span class="relative flex h-3 w-3">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                    </span>
+                    <h3 class="text-white font-bold">البث المباشر - قناة دجلة الفضائية</h3>
+                </div>
+                <button onclick="closeLiveStream()" class="text-gray-400 hover:text-white transition"><i class="ph ph-x text-2xl"></i></button>
+            </div>
+            <div class="relative w-full aspect-video bg-black flex items-center justify-center">
+                <video id="live-video" class="w-full h-full outline-none" controls playsinline></video>
             </div>
         </div>
     </div>
@@ -661,6 +690,42 @@ const db = getFirestore(app);
 window.allStudents = [];
 window.currentUserRole = 'guest'; 
 window.currentStudentId = null;
+
+// Live Stream Logic
+let hls;
+window.openLiveStream = function() {
+    const modal = document.getElementById('live-modal');
+    const video = document.getElementById('live-video');
+    const videoSrc = 'https://stream.addresses-sat.com/ANA_DEJLAH/index.m3u8?fbclid=IwY2xjawRpzcdleHRuA2FlbQIxMABicmlkETE5ZHIxN21SMW9iUVZhYzAxc3J0YwZhcHBfaWQQMjIyMDM5MTc4ODIwMDg5MgABHjbuc0QWo56mbmGe0VDTZTqRufRF9lPjr2dIlo9ENdVXvIGLa1YF1TGVBEEC_aem_74fu-fQgovR2yifGiDthvg';
+
+    modal.classList.remove('hidden');
+    
+    if (Hls.isSupported()) {
+        if(hls) hls.destroy();
+        hls = new Hls();
+        hls.loadSource(videoSrc);
+        hls.attachMedia(video);
+        hls.on(Hls.Events.MANIFEST_PARSED, function() {
+            video.play();
+        });
+    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        // Native support for Safari
+        video.src = videoSrc;
+        video.addEventListener('loadedmetadata', function() {
+            video.play();
+        });
+    }
+};
+
+window.closeLiveStream = function() {
+    const modal = document.getElementById('live-modal');
+    const video = document.getElementById('live-video');
+    modal.classList.add('hidden');
+    video.pause();
+    if(hls) {
+        hls.destroy();
+    }
+};
 
 // Theme Toggle Logic
 window.toggleTheme = function() {
