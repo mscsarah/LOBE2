@@ -606,16 +606,22 @@
             <!-- Export Letters Card -->
             <div class="bg-blue-50/30 dark:bg-[#0b132b] p-6 rounded-2xl border border-blue-100 dark:border-blue-900/50 shadow-sm mb-8">
                 <h3 class="text-lg font-bold text-blue-900 dark:text-blue-300 mb-1 flex items-center gap-2"><i class="ph ph-printer"></i> إصدار الكتب الرسمية (حسب المركز)</h3>
-                <p class="text-sm text-blue-700/70 dark:text-blue-300/70 mb-4">لإنشاء كتاب رسمي للطباعة يحتوي فقط على الطلبة المقبولين في المركز المحدد.</p>
-                <div class="flex flex-col md:flex-row gap-3">
-                    <select id="location-export-select" class="flex-1 bg-white dark:bg-navy-900 border border-gray-200 dark:border-navy-700 rounded-xl px-4 py-2.5 focus:border-blue-500 outline-none text-gray-700 dark:text-gray-300">
+                <p class="text-sm text-blue-700/70 dark:text-blue-300/70 mb-4">لإنشاء كتاب رسمي للطباعة يحتوي فقط على الطلبة (تم الرفع) في المركز المحدد.</p>
+                <div class="flex flex-col md:flex-row gap-3 flex-wrap">
+                    <select id="location-export-select" class="flex-1 bg-white dark:bg-navy-900 border border-gray-200 dark:border-navy-700 rounded-xl px-4 py-2.5 focus:border-blue-500 outline-none text-gray-700 dark:text-gray-300 min-w-[200px]">
                         <option value="" disabled selected>-- جاري تحميل المراكز المتاحة --</option>
                     </select>
-                    <button class="bg-red-600 hover:bg-red-700 text-white px-6 py-2.5 rounded-xl font-bold transition flex items-center justify-center gap-2 shadow" onclick="window.generateLocationLetter()">
-                        <i class="ph ph-file-pdf"></i> إصدار وطباعة (PDF)
+                    <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2.5 rounded-xl font-bold transition flex items-center justify-center gap-2 shadow text-sm" onclick="window.markAllUploadedAndPrint()">
+                        <i class="ph ph-check-double"></i> تم الرفع للكل + طباعة
                     </button>
-                    <button class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-bold transition flex items-center justify-center gap-2 shadow" onclick="window.exportToWord()">
-                        <i class="ph ph-file-doc"></i> تنزيل Word
+                    <button class="bg-red-600 hover:bg-red-700 text-white px-4 py-2.5 rounded-xl font-bold transition flex items-center justify-center gap-2 shadow text-sm" onclick="window.generateLocationLetter()">
+                        <i class="ph ph-file-pdf"></i> طباعة (PDF)
+                    </button>
+                    <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl font-bold transition flex items-center justify-center gap-2 shadow text-sm" onclick="window.exportToWord()">
+                        <i class="ph ph-file-doc"></i> كتاب مجمع (Word)
+                    </button>
+                    <button class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2.5 rounded-xl font-bold transition flex items-center justify-center gap-2 shadow text-sm" onclick="window.exportAllStudentFormsWord()">
+                        <i class="ph ph-files"></i> استمارات فردية (Word)
                     </button>
                 </div>
             </div>
@@ -626,16 +632,16 @@
                     <table class="w-full text-right border-collapse">
                         <thead>
                             <tr class="bg-gray-50 dark:bg-navy-900 border-b border-gray-100 dark:border-navy-700">
-                                <th class="p-4 text-sm font-bold text-gray-500 dark:text-gray-400">اسم الطالب</th>
-                                <th class="p-4 text-sm font-bold text-gray-500 dark:text-gray-400">الإيميل</th>
-                                <th class="p-4 text-sm font-bold text-gray-500 dark:text-gray-400">المحافظة</th>
-                                <th class="p-4 text-sm font-bold text-gray-500 dark:text-gray-400">المطلوب</th>
-                                <th class="p-4 text-sm font-bold text-gray-500 dark:text-gray-400">المقبول</th>
-                                <th class="p-4 text-sm font-bold text-gray-500 dark:text-gray-400 text-center">التقرير</th>
-                                <th class="p-4 text-sm font-bold text-gray-500 dark:text-gray-400 text-center">الحالة</th>
-                                <th class="p-4 text-sm font-bold text-gray-500 dark:text-gray-400 text-center">إجراء</th>
-                            </tr>
-                        </thead>
+            <th class="p-4 text-sm font-bold text-gray-500 dark:text-gray-400">اسم الطالب</th>
+            <th class="p-4 text-sm font-bold text-gray-500 dark:text-gray-400">الإيميل</th>
+            <th class="p-4 text-sm font-bold text-gray-500 dark:text-gray-400">المحافظة</th>
+            <th class="p-4 text-sm font-bold text-gray-500 dark:text-gray-400">المطلوب</th>
+            <th class="p-4 text-sm font-bold text-gray-500 dark:text-gray-400">المقبول</th>
+            <th class="p-4 text-sm font-bold text-gray-500 dark:text-gray-400 text-center">التقرير</th>
+            <th class="p-4 text-sm font-bold text-gray-500 dark:text-gray-400 text-center">الحالة</th>
+            <th class="p-4 text-sm font-bold text-gray-500 dark:text-gray-400 text-center">إجراء</th>
+        </tr>
+    </thead>
                         <tbody id="admin-table-body" class="divide-y divide-gray-50 dark:divide-navy-700">
                             <!-- Injected via JS -->
                         </tbody>
@@ -985,20 +991,31 @@ window.updateExportSelect = function() {
     const select = document.getElementById('location-export-select');
     if(!select) return;
     
+    // الاحتفاظ بالاختيار السابق إن وُجد حتى لا يُعاد تعيينه عند كل تحديث
+    const previousValue = select.value;
+    
+    // إحضار جميع الطلبة المقبولين لتسهيل خيار "تم الرفع للكل"
     const acceptedStudents = window.allStudents.filter(s => s.status === 'مقبول' || s.status === 'مكتمل');
     const uniqueLocations = [...new Set(acceptedStudents.map(s => s.assignedPlace).filter(Boolean))];
     
     if(uniqueLocations.length === 0) {
-        select.innerHTML = '<option value="" disabled selected>لا يوجد طلاب موزعين للطباعة</option>';
+        select.innerHTML = '<option value="" disabled selected>لا يوجد مراكز متاحة</option>';
         return;
     }
 
     let options = '<option value="" disabled selected>-- اختر المركز لطباعة الكتاب --</option>';
     uniqueLocations.forEach(loc => {
-        const count = acceptedStudents.filter(s => s.assignedPlace === loc).length;
-        options += `<option value="${loc}">${loc} (${count} طلاب)</option>`;
+        const total = acceptedStudents.filter(s => s.assignedPlace === loc).length;
+        const uploadedCount = acceptedStudents.filter(s => s.assignedPlace === loc && s.hasReport === true).length;
+        options += `<option value="${loc}">${loc} (${uploadedCount} تم الرفع / من أصل ${total})</option>`;
     });
+    
     select.innerHTML = options;
+    
+    // استعادة الاختيار السابق
+    if (previousValue && options.includes(`value="${previousValue}"`)) {
+        select.value = previousValue;
+    }
 }
 
 window.updateUI = function() {
@@ -1129,6 +1146,16 @@ window.renderAdminPanel = function() {
         let repHtml = s.hasReport ? `<span class="text-green-600 font-bold text-xs bg-green-50 px-2 py-1 rounded dark:bg-green-900/30 dark:text-green-400">تم الرفع</span>` : `<span class="text-red-500 font-bold text-xs bg-red-50 px-2 py-1 rounded dark:bg-red-900/30 dark:text-red-400">لم يرفع</span>`;
         let statusHtml = s.status === 'مقبول' ? `<span class="text-blue-600 font-bold text-xs bg-blue-50 px-2 py-1 rounded dark:bg-blue-900/30 dark:text-blue-400">مقبول</span>` : (s.status === 'مكتمل' ? `<span class="text-gray-600 font-bold text-xs bg-gray-100 px-2 py-1 rounded dark:bg-gray-800 dark:text-gray-300">مكتمل</span>` : `<span class="text-yellow-600 font-bold text-xs bg-yellow-50 px-2 py-1 rounded dark:bg-yellow-900/30 dark:text-yellow-400">انتظار</span>`);
         
+        let reportAction = '';
+        if (s.status === 'مقبول' || s.status === 'مكتمل') {
+            reportAction = `
+            <div class="flex gap-1 mt-1 justify-center">
+                <button class="text-xs bg-green-600 text-white px-2 py-1 rounded font-bold hover:bg-green-700 transition" onclick="window.updateReportStatus('${s.id}', true)">تم</button>
+                <button class="text-xs bg-red-600 text-white px-2 py-1 rounded font-bold hover:bg-red-700 transition" onclick="window.updateReportStatus('${s.id}', false)">لم يرفع</button>
+            </div>
+            `;
+        }
+
         let action = '';
         if(s.status === 'انتظار') {
             action = `
@@ -1148,7 +1175,7 @@ window.renderAdminPanel = function() {
              action = `
             <div class="flex flex-col gap-1 w-full min-w-[100px]">
                 <span class="text-gray-400 dark:text-gray-500 text-xs font-bold block mb-1">منتهي</span>
-                <button class="text-xs bg-red-600 text-white px-2 py-1.5 rounded font-bold hover:bg-red-700 transition" onclick="window.deleteStudent('${s.id}')">مسح</button>
+                <button class="text-xs bg-red-600 text-white px-2 py-1.5 rounded font-bold hover:bg-red-700 transition" onclick="window.deleteStudent('${s.id}')">مسح الطالب</button>
             </div>`;
         }
 
@@ -1159,12 +1186,21 @@ window.renderAdminPanel = function() {
             <td class="p-4 text-sm text-gray-600 dark:text-gray-400">${s.gov || '---'}</td>
             <td class="p-4 text-sm text-gray-600 dark:text-gray-400">${s.p1}</td>
             <td class="p-4 text-sm font-bold text-blue-600 dark:text-blue-400">${s.assignedPlace || '---'}</td>
-            <td class="p-4 text-center">${repHtml}</td>
+            <td class="p-4 text-center">${repHtml}${reportAction}</td>
             <td class="p-4 text-center">${statusHtml}</td>
             <td class="p-4 text-center w-28">${action}</td>
         </tr>`;
     });
     tbody.innerHTML = html;
+};
+
+window.updateReportStatus = async function(id, status) {
+    try {
+        await updateDoc(doc(db, "students_v2", id), { hasReport: status });
+        window.showToast(status ? 'تم تحديث التقرير إلى: تم الرفع' : 'تم تحديث التقرير إلى: لم يرفع', 'success');
+    } catch (e) {
+        window.showToast('خطأ في تحديث حالة التقرير', 'error');
+    }
 };
 
 window.acceptStudent = async function(id) {
@@ -1295,6 +1331,39 @@ window.sendSummaryEmail = function() {
     }).then(() => window.showToast('تم إرسال الملخص', 'success'));
 }
 
+window.markAllUploadedAndPrint = async function() {
+    const loc = document.getElementById('location-export-select').value;
+    if(!loc) return window.showToast('يرجى اختيار مركز تدريب أولاً', 'error');
+
+    // إيجاد جميع الطلاب المقبولين في هذا المركز
+    const allAcceptedInLoc = window.allStudents.filter(s => (s.status === 'مقبول' || s.status === 'مكتمل') && s.assignedPlace === loc);
+    
+    if(allAcceptedInLoc.length === 0) return window.showToast('لا يوجد طلاب مقبولين في هذا المركز', 'error');
+
+    // فلترة الطلاب الذين لم يتم رفعهم بعد
+    const stsToUpdate = allAcceptedInLoc.filter(s => !s.hasReport);
+    
+    if(stsToUpdate.length > 0) {
+        window.showToast('جاري تحديث حالة جميع الطلاب إلى (تم الرفع)...', 'info');
+        try {
+            // تحديث الحالات في قاعدة البيانات
+            const promises = stsToUpdate.map(s => updateDoc(doc(db, "students_v2", s.id), { hasReport: true }));
+            await Promise.all(promises);
+            window.showToast('تم التحديث بنجاح، جاري تجهيز الطباعة...', 'success');
+        } catch(e) {
+            window.showToast('خطأ أثناء التحديث', 'error');
+            return;
+        }
+    } else {
+        window.showToast('جميع الطلاب في هذا المركز تم رفعهم مسبقاً، جاري الطباعة...', 'info');
+    }
+
+    // الانتظار قليلاً لضمان تحديث الواجهة والبيانات ثم الطباعة (PDF)
+    setTimeout(() => {
+        window.generateLocationLetter();
+    }, 1200);
+}
+
 window.generateStudentFormWord = function(id) {
     const s = window.allStudents.find(x => x.id === id);
     if(!s) return;
@@ -1311,7 +1380,7 @@ window.generateStudentFormWord = function(id) {
 
     const htmlContent = `
     <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
-    <head><meta charset="utf-8"><title>كتاب تدريب طالب</title></head>
+    <head><meta charset="utf-8"><title>استمارة الطالب</title></head>
     <body style="font-family: 'Arial', sans-serif; direction: rtl; text-align: right;">
         <div style="text-align: center; font-weight: bold; font-size: 20px; line-height: 1.8; margin-bottom: 25px;">
             جامعة دجلة<br>
@@ -1355,22 +1424,75 @@ window.generateStudentFormWord = function(id) {
 window.generateLocationLetter = function() {
     const loc = document.getElementById('location-export-select').value;
     if(!loc) return window.showToast('يرجى اختيار مركز تدريب', 'error');
-    const sts = window.allStudents.filter(s => (s.status === 'مقبول' || s.status === 'مكتمل') && s.assignedPlace === loc);
-    document.getElementById('print-date').innerText = new Date().toLocaleDateString('ar-IQ');
-    document.getElementById('print-to-location').innerText = `إلى: إدارة ( ${loc} ) المحترمين`;
-    let html = ''; sts.forEach((s, i) => html += `<tr><td>${i+1}</td><td style="text-align:right;">${s.name}</td><td>${s.gov || '---'}</td><td></td></tr>`);
-    document.getElementById('print-table-body').innerHTML = html;
+    const sts = window.allStudents.filter(s => s.hasReport === true && s.assignedPlace === loc);
+    if(sts.length === 0) return window.showToast('لا يوجد طلاب (تم الرفع) في هذا المركز', 'error');
+
+    let tableRows = '';
+    sts.forEach((s, index) => {
+        tableRows += `<tr>
+            <td style="border: 1px solid black; padding: 10px; text-align: center; font-size: 16px;">${index + 1}</td>
+            <td style="border: 1px solid black; padding: 10px; text-align: center; font-size: 16px;">${s.name}</td>
+            <td style="border: 1px solid black; padding: 10px; text-align: center; font-size: 16px;">الثالثة</td>
+            <td style="border: 1px solid black; padding: 10px; text-align: center; font-size: 16px;">الصباحية</td>
+        </tr>`;
+    });
+
+    const printContent = `
+    <html dir="rtl" lang="ar">
+    <head>
+        <meta charset="utf-8">
+        <title>كتاب تدريب - ${loc}</title>
+        <style>
+            body { font-family: 'Arial', sans-serif; direction: rtl; text-align: right; padding: 40px; }
+            .header { text-align: center; font-weight: bold; font-size: 20px; line-height: 1.8; margin-bottom: 25px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+            th, td { border: 1px solid black; padding: 12px; text-align: center; font-size: 16px; }
+            th { background-color: #f2f2f2 !important; -webkit-print-color-adjust: exact; color-adjust: exact; }
+            @media print { @page { margin: 1.5cm; } }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            جامعة دجلة<br>
+            كلية الهندسة<br>
+            قسم الليزر والالكترونيات البصرية<br>
+            اسم المؤسسة الحكومية (${loc})<br>
+            مدة التدريب (1\\7) الى (31\\7)<br>
+            اسماء الطلبة الراغبين بالتدريب للعام الدراسي 2025-2026
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>ت</th>
+                    <th>اسم الطالب</th>
+                    <th>المرحلة</th>
+                    <th>نوع الدراسة</th>
+                </tr>
+            </thead>
+            <tbody>${tableRows}</tbody>
+        </table>
+        <script>
+            window.onload = function() { window.print(); }
+        <\/script>
+    </body>
+    </html>
+    `;
+
+    // فتح نافذة طباعة مخصصة ومستقلة لتجنب أي مشاكل في تصميم الموقع الأصلي
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(printContent);
+    printWindow.document.close();
     
     setTimeout(() => {
-        window.print();
         window.notifyStudentsOfLetter(sts, loc);
-    }, 300);
+    }, 1500);
 }
 
 window.exportToWord = function() {
     const loc = document.getElementById('location-export-select').value;
     if(!loc) return window.showToast('يرجى اختيار مركز تدريب', 'error');
-    const sts = window.allStudents.filter(s => (s.status === 'مقبول' || s.status === 'مكتمل') && s.assignedPlace === loc);
+    const sts = window.allStudents.filter(s => s.hasReport === true && s.assignedPlace === loc);
+    if(sts.length === 0) return window.showToast('لا يوجد طلاب (تم الرفع) في هذا المركز', 'error');
     
     let tableRows = '';
     sts.forEach((s, index) => {
@@ -1411,6 +1533,63 @@ window.exportToWord = function() {
     const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `كتاب_رسمي_مجمع_${loc}.doc`; link.click();
     
     window.showToast('تم تحميل ملف الـ Word بنجاح', 'success');
+    window.notifyStudentsOfLetter(sts, loc);
+};
+
+window.exportAllStudentFormsWord = function() {
+    const loc = document.getElementById('location-export-select').value;
+    if(!loc) return window.showToast('يرجى اختيار مركز تدريب', 'error');
+    const sts = window.allStudents.filter(s => s.hasReport === true && s.assignedPlace === loc);
+    if(sts.length === 0) return window.showToast('لا يوجد طلاب (تم الرفع) في هذا المركز', 'error');
+
+    let allFormsHtml = '';
+    sts.forEach((s, index) => {
+        let tableRows = `<tr>
+            <td style="border: 1px solid black; padding: 10px; text-align: center; font-size: 16px;">1</td>
+            <td style="border: 1px solid black; padding: 10px; text-align: center; font-size: 16px;">${s.name}</td>
+            <td style="border: 1px solid black; padding: 10px; text-align: center; font-size: 16px;">الثالثة</td>
+            <td style="border: 1px solid black; padding: 10px; text-align: center; font-size: 16px;">الصباحية</td>
+        </tr>`;
+        
+        allFormsHtml += `
+        <div style="text-align: center; font-weight: bold; font-size: 20px; line-height: 1.8; margin-bottom: 25px;">
+            جامعة دجلة<br>
+            كلية الهندسة<br>
+            قسم الليزر والالكترونيات البصرية<br>
+            اسم المؤسسة الحكومية (${loc})<br>
+            مدة التدريب (1\\7) الى (31\\7)<br>
+            اسماء الطلبة الراغبين بالتدريب للعام الدراسي 2025-2026
+        </div>
+        <table style="width: 100%; border-collapse: collapse; margin-top: 20px; margin-bottom: 40px;" border="1">
+            <thead>
+                <tr>
+                    <th style="border: 1px solid black; padding: 12px; background-color: #f2f2f2; font-size: 16px;">ت</th>
+                    <th style="border: 1px solid black; padding: 12px; background-color: #f2f2f2; font-size: 16px;">اسم الطالب</th>
+                    <th style="border: 1px solid black; padding: 12px; background-color: #f2f2f2; font-size: 16px;">المرحلة</th>
+                    <th style="border: 1px solid black; padding: 12px; background-color: #f2f2f2; font-size: 16px;">نوع الدراسة</th>
+                </tr>
+            </thead>
+            <tbody>${tableRows}</tbody>
+        </table>
+        `;
+        
+        // كود الفاصل لإنشاء ورقة جديدة لكل طالب
+        if(index < sts.length - 1) {
+            allFormsHtml += `<br clear="all" style="page-break-before:always" />`;
+        }
+    });
+
+    const htmlContent = `
+    <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+    <head><meta charset="utf-8"><title>استمارات فردية للطلاب</title></head>
+    <body style="font-family: 'Arial', sans-serif; direction: rtl; text-align: right;">
+        ${allFormsHtml}
+    </body></html>`;
+
+    const blob = new Blob(['\ufeff', htmlContent], { type: 'application/msword' });
+    const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `استمارات_فردية_مجمعة_${loc}.doc`; link.click();
+    
+    window.showToast('تم تحميل الاستمارات الفردية بنجاح', 'success');
     window.notifyStudentsOfLetter(sts, loc);
 };
 
