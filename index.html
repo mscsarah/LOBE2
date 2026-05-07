@@ -688,7 +688,7 @@
 <!-- Firebase & Logic script -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCL6pp1swXfyWU3wtIDVJF8yXzvJ5gdFwg",
@@ -1126,16 +1126,30 @@ window.renderAdminPanel = function() {
     
     let html = '';
     window.allStudents.forEach(s => {
-        let repHtml = s.hasReport ? `<span class="text-green-600 font-bold text-xs bg-green-50 px-2 py-1 rounded dark:bg-green-900/30 dark:text-green-400">تم</span>` : `<span class="text-red-500 font-bold text-xs bg-red-50 px-2 py-1 rounded dark:bg-red-900/30 dark:text-red-400">لم يرفع</span>`;
+        let repHtml = s.hasReport ? `<span class="text-green-600 font-bold text-xs bg-green-50 px-2 py-1 rounded dark:bg-green-900/30 dark:text-green-400">تم الرفع</span>` : `<span class="text-red-500 font-bold text-xs bg-red-50 px-2 py-1 rounded dark:bg-red-900/30 dark:text-red-400">لم يرفع</span>`;
         let statusHtml = s.status === 'مقبول' ? `<span class="text-blue-600 font-bold text-xs bg-blue-50 px-2 py-1 rounded dark:bg-blue-900/30 dark:text-blue-400">مقبول</span>` : (s.status === 'مكتمل' ? `<span class="text-gray-600 font-bold text-xs bg-gray-100 px-2 py-1 rounded dark:bg-gray-800 dark:text-gray-300">مكتمل</span>` : `<span class="text-yellow-600 font-bold text-xs bg-yellow-50 px-2 py-1 rounded dark:bg-yellow-900/30 dark:text-yellow-400">انتظار</span>`);
         
         let action = '';
         if(s.status === 'انتظار') {
-            action = `<button class="text-xs bg-navy-900 dark:bg-gold dark:text-navy-900 text-white px-3 py-1.5 rounded font-bold hover:bg-gold dark:hover:bg-yellow-400 hover:text-navy-900 transition w-full" onclick="window.acceptStudent('${s.id}')">قبول وتوزيع</button>`;
+            action = `
+            <div class="flex flex-col gap-1 w-full min-w-[100px]">
+                <button class="text-xs bg-navy-900 dark:bg-gold dark:text-navy-900 text-white px-2 py-1.5 rounded font-bold hover:bg-gold dark:hover:bg-yellow-400 hover:text-navy-900 transition" onclick="window.acceptStudent('${s.id}')">موافقة وتوزيع</button>
+                <button class="text-xs bg-red-600 text-white px-2 py-1.5 rounded font-bold hover:bg-red-700 transition" onclick="window.deleteStudent('${s.id}')">مسح الطالب</button>
+            </div>`;
         } else if (s.status === 'مقبول') {
-            action = `<button class="text-xs bg-green-600 text-white px-3 py-1.5 rounded font-bold hover:bg-green-700 transition w-full mb-1" onclick="window.completeStudent('${s.id}')">إنهاء التدريب</button><button class="text-xs border border-gray-300 dark:border-navy-600 text-gray-600 dark:text-gray-400 px-3 py-1.5 rounded font-bold hover:bg-gray-100 dark:hover:bg-navy-700 transition w-full" onclick="window.resetStudent('${s.id}')">إلغاء</button>`;
+            action = `
+            <div class="flex flex-col gap-1 w-full min-w-[120px]">
+                <button class="text-xs bg-blue-600 text-white px-2 py-1.5 rounded font-bold hover:bg-blue-700 transition" onclick="window.generateStudentFormWord('${s.id}')">تم الرفع (فورمة + إيميل)</button>
+                <button class="text-xs bg-green-600 text-white px-2 py-1.5 rounded font-bold hover:bg-green-700 transition" onclick="window.completeStudent('${s.id}')">إنهاء التدريب</button>
+                <button class="text-xs border border-gray-300 dark:border-navy-600 text-gray-600 dark:text-gray-400 px-2 py-1.5 rounded font-bold hover:bg-gray-100 dark:hover:bg-navy-700 transition" onclick="window.resetStudent('${s.id}')">إلغاء</button>
+                <button class="text-xs bg-red-600 text-white px-2 py-1.5 rounded font-bold hover:bg-red-700 transition" onclick="window.deleteStudent('${s.id}')">مسح</button>
+            </div>`;
         } else {
-             action = `<span class="text-gray-400 dark:text-gray-500 text-xs font-bold">منتهي</span>`;
+             action = `
+            <div class="flex flex-col gap-1 w-full min-w-[100px]">
+                <span class="text-gray-400 dark:text-gray-500 text-xs font-bold block mb-1">منتهي</span>
+                <button class="text-xs bg-red-600 text-white px-2 py-1.5 rounded font-bold hover:bg-red-700 transition" onclick="window.deleteStudent('${s.id}')">مسح</button>
+            </div>`;
         }
 
         html += `
@@ -1176,6 +1190,16 @@ window.acceptStudent = async function(id) {
         window.open(gmailLink, '_blank');
 
     } catch(e) { window.showToast('خطأ', 'error'); }
+};
+
+window.deleteStudent = async function(id) {
+    if(!confirm("هل أنت متأكد من مسح بيانات هذا الطالب نهائياً من النظام؟")) return;
+    try {
+        await deleteDoc(doc(db, "students_v2", id));
+        window.showToast('تم مسح الطالب بنجاح', 'success');
+    } catch(e) {
+        window.showToast('خطأ في مسح الطالب', 'error');
+    }
 };
 
 window.resetStudent = async function(id) {
@@ -1271,6 +1295,63 @@ window.sendSummaryEmail = function() {
     }).then(() => window.showToast('تم إرسال الملخص', 'success'));
 }
 
+window.generateStudentFormWord = function(id) {
+    const s = window.allStudents.find(x => x.id === id);
+    if(!s) return;
+    
+    // تحديث حالة الطالب إلى (تم الرفع)
+    updateDoc(doc(db, "students_v2", id), { hasReport: true }).catch(e=>console.log(e));
+
+    let tableRows = `<tr>
+        <td style="border: 1px solid black; padding: 10px; text-align: center; font-size: 16px;">1</td>
+        <td style="border: 1px solid black; padding: 10px; text-align: center; font-size: 16px;">${s.name}</td>
+        <td style="border: 1px solid black; padding: 10px; text-align: center; font-size: 16px;">الثالثة</td>
+        <td style="border: 1px solid black; padding: 10px; text-align: center; font-size: 16px;">الصباحية</td>
+    </tr>`;
+
+    const htmlContent = `
+    <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+    <head><meta charset="utf-8"><title>كتاب تدريب طالب</title></head>
+    <body style="font-family: 'Arial', sans-serif; direction: rtl; text-align: right;">
+        <div style="text-align: center; font-weight: bold; font-size: 20px; line-height: 1.8; margin-bottom: 25px;">
+            جامعة دجلة<br>
+            كلية الهندسة<br>
+            قسم الليزر والالكترونيات البصرية<br>
+            اسم المؤسسة الحكومية (${s.assignedPlace || s.p1})<br>
+            مدة التدريب (1\\7) الى (31\\7)<br>
+            اسماء الطلبة الراغبين بالتدريب للعام الدراسي 2025-2026
+        </div>
+        <table style="width: 100%; border-collapse: collapse; margin-top: 20px;" border="1">
+            <thead>
+                <tr>
+                    <th style="border: 1px solid black; padding: 12px; background-color: #f2f2f2; font-size: 16px;">ت</th>
+                    <th style="border: 1px solid black; padding: 12px; background-color: #f2f2f2; font-size: 16px;">اسم الطالب</th>
+                    <th style="border: 1px solid black; padding: 12px; background-color: #f2f2f2; font-size: 16px;">المرحلة</th>
+                    <th style="border: 1px solid black; padding: 12px; background-color: #f2f2f2; font-size: 16px;">نوع الدراسة</th>
+                </tr>
+            </thead>
+            <tbody>${tableRows}</tbody>
+        </table>
+    </body></html>`;
+
+    const blob = new Blob(['\ufeff', htmlContent], { type: 'application/msword' });
+    const link = document.createElement('a'); 
+    link.href = URL.createObjectURL(blob); 
+    link.download = `استمارة_الطالب_${s.name}.doc`; 
+    link.click();
+    
+    window.showToast('تم تحديث الحالة وتحميل الفورمة', 'success');
+    
+    // إرسال إيميل للطالب يعلمه برفع الاستمارة
+    const subject = encodeURIComponent(`تم رفع بيانات التدريب الصيفي - ${s.assignedPlace || s.p1}`);
+    const body = encodeURIComponent(`عزيزي الطالب/ة ${s.name}،\n\nنود إعلامك بأنه تم رفع بياناتك وإصدار استمارة التدريب الرسمية الخاصة بك، وتم توجيهها إلى جهة التدريب (${s.assignedPlace || s.p1}).\n\nيرجى المراجعة والمتابعة للبدء بفترة التدريب.\n\nتمنياتنا لك بكل التوفيق.\nم.م سارة صباح الزيدي\nالمشرف الأكاديمي`);
+    
+    setTimeout(() => {
+        const gmailLink = `https://mail.google.com/mail/?view=cm&fs=1&to=${s.email}&su=${subject}&body=${body}`;
+        window.open(gmailLink, '_blank');
+    }, 800);
+}
+
 window.generateLocationLetter = function() {
     const loc = document.getElementById('location-export-select').value;
     if(!loc) return window.showToast('يرجى اختيار مركز تدريب', 'error');
@@ -1293,30 +1374,41 @@ window.exportToWord = function() {
     
     let tableRows = '';
     sts.forEach((s, index) => {
-        tableRows += `<tr><td style="border: 1px solid black; padding: 8px; text-align: center;">${index + 1}</td><td style="border: 1px solid black; padding: 8px; text-align: right;">${s.name}</td><td style="border: 1px solid black; padding: 8px; text-align: center;">${s.gov || '---'}</td><td style="border: 1px solid black; padding: 8px; text-align: center;"></td></tr>`;
+        tableRows += `<tr>
+            <td style="border: 1px solid black; padding: 10px; text-align: center; font-size: 16px;">${index + 1}</td>
+            <td style="border: 1px solid black; padding: 10px; text-align: center; font-size: 16px;">${s.name}</td>
+            <td style="border: 1px solid black; padding: 10px; text-align: center; font-size: 16px;">الثالثة</td>
+            <td style="border: 1px solid black; padding: 10px; text-align: center; font-size: 16px;">الصباحية</td>
+        </tr>`;
     });
 
     const htmlContent = `
     <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
-    <head><meta charset="utf-8"><title>كتاب رسمي</title></head>
+    <head><meta charset="utf-8"><title>كتاب رسمي مجمع</title></head>
     <body style="font-family: 'Arial', sans-serif; direction: rtl; text-align: right;">
-        <div style="text-align: right; font-weight: bold; margin-bottom: 20px;">جمهورية العراق<br>وزارة التعليم العالي والبحث العلمي<br>جامعة دجلة / كلية الهندسة<br>قسم هندسة الليزر والإلكترونيات البصرية</div>
-        <div style="text-align: center; font-weight: bold; font-size: 24px; text-decoration: underline; margin-bottom: 20px;">م/ تسهيل مهمة تدريب صيفي</div>
-        <div style="font-weight: bold; font-size: 18px; margin-bottom: 10px;">إلى: إدارة ( ${loc} ) المحترمين</div>
-        <p style="font-size: 18px; text-align: justify; line-height: 1.6;">تحية طيبة...<br>يرجى التفضل بالموافقة على تدريب الطلبة المدرجة أسماؤهم في أدناه، والذين اجتازوا المرحلة الثالثة بنجاح في قسم هندسة الليزر والإلكترونيات البصرية للعام الدراسي الحالي. راجين شمولهم ببرنامجكم التدريبي وتزويدنا بتقييمهم وتأييد اجتيازهم فترة التدريب المقررة بعد الانتهاء، خدمة للصالح العام وللمسيرة العلمية.</p>
-        <table style="width: 100%; border-collapse: collapse; margin-top: 20px; margin-bottom: 20px; border: 1px solid black;" border="1">
-            <thead><tr><th style="width: 10%; border: 1px solid black; padding: 10px; background-color: #f2f2f2;">ت</th><th style="width: 40%; border: 1px solid black; padding: 10px; background-color: #f2f2f2;">اسم الطالب الثلاثي</th><th style="width: 25%; border: 1px solid black; padding: 10px; background-color: #f2f2f2;">المحافظة</th><th style="width: 25%; border: 1px solid black; padding: 10px; background-color: #f2f2f2;">ملاحظات / التوقيع</th></tr></thead>
+        <div style="text-align: center; font-weight: bold; font-size: 20px; line-height: 1.8; margin-bottom: 25px;">
+            جامعة دجلة<br>
+            كلية الهندسة<br>
+            قسم الليزر والالكترونيات البصرية<br>
+            اسم المؤسسة الحكومية (${loc})<br>
+            مدة التدريب (1\\7) الى (31\\7)<br>
+            اسماء الطلبة الراغبين بالتدريب للعام الدراسي 2025-2026
+        </div>
+        <table style="width: 100%; border-collapse: collapse; margin-top: 20px;" border="1">
+            <thead>
+                <tr>
+                    <th style="border: 1px solid black; padding: 12px; background-color: #f2f2f2; font-size: 16px;">ت</th>
+                    <th style="border: 1px solid black; padding: 12px; background-color: #f2f2f2; font-size: 16px;">اسم الطالب</th>
+                    <th style="border: 1px solid black; padding: 12px; background-color: #f2f2f2; font-size: 16px;">المرحلة</th>
+                    <th style="border: 1px solid black; padding: 12px; background-color: #f2f2f2; font-size: 16px;">نوع الدراسة</th>
+                </tr>
+            </thead>
             <tbody>${tableRows}</tbody>
         </table>
-        <div style="margin-top: 50px;">
-            <table style="border: none; width: 100%;" border="0">
-                <tr><td style="border: none; text-align: right; vertical-align: top;"><b>نسخة منه إلى:</b><br>- رئاسة القسم / للحفظ.<br>- ملفات الطلبة.</td><td style="border: none; text-align: center; vertical-align: top;">التوقيع: ....................................<br><br><b>م.م سارة صباح الزيدي</b><br>المشرف الأكاديمي للتدريب الصيفي<br>قسم هندسة الليزر والإلكترونيات البصرية</td></tr>
-            </table>
-        </div>
     </body></html>`;
 
     const blob = new Blob(['\ufeff', htmlContent], { type: 'application/msword' });
-    const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `كتاب_رسمي_${loc}.doc`; link.click();
+    const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `كتاب_رسمي_مجمع_${loc}.doc`; link.click();
     
     window.showToast('تم تحميل ملف الـ Word بنجاح', 'success');
     window.notifyStudentsOfLetter(sts, loc);
