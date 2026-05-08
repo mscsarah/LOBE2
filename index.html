@@ -1595,6 +1595,51 @@ window.exportAllStudentFormsWord = function() {
 
 // Init run
 window.populateSelects();
+
+// Canvas Stars Animation (Full Website)
+const canvas = document.createElement('canvas');
+canvas.id = 'stars-canvas';
+canvas.className = 'fixed inset-0 pointer-events-none z-[9999] opacity-80 mix-blend-screen';
+document.body.appendChild(canvas);
+const ctx = canvas.getContext('2d');
+let width, height, stars = [];
+
+function initStars() {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+    stars = [];
+    const colors = ['#D4AF37', '#FFFFFF', '#60A5FA'];
+    for(let i = 0; i < 200; i++) {
+        stars.push({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            r: Math.random() * 2 + 0.5,
+            dy: Math.random() * 0.5 + 0.2,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            alpha: Math.random() * Math.PI * 2
+        });
+    }
+}
+
+function animateStars() {
+    ctx.clearRect(0, 0, width, height);
+    stars.forEach(s => {
+        ctx.fillStyle = s.color;
+        ctx.globalAlpha = (Math.sin(s.alpha) + 1) / 2 * 0.8 + 0.2; 
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fill();
+        s.y -= s.dy;
+        s.alpha += 0.03;
+        if(s.y < 0) s.y = height;
+    });
+    requestAnimationFrame(animateStars);
+}
+
+window.addEventListener('resize', initStars);
+initStars();
+animateStars();
+
 </script>
 
 </body>
