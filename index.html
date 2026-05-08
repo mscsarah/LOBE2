@@ -888,7 +888,7 @@ window.PLACES = [
     { id: 'p38', name: 'مستشفى المسيب العام', icon: 'ph-hospital', desc: 'مؤسسة حكومية طبية', max: 10, class: 'card-green' },
     { id: 'p39', name: 'وزارة النفط / شركة مصافي الشمال / مصفى حديثة', icon: 'ph-factory', desc: 'مؤسسة حكومية نفطية', max: 10, class: 'card-red' },
     { id: 'p40', name: 'دائرة صحة بابل / مستشفى الامام الصادق', icon: 'ph-hospital', desc: 'مؤسسة حكومية طبية', max: 10, class: 'card-green' },
-    { id: 'p1', name: 'مستشفى اليرموك التعليمي', icon: 'ph-hospital', desc: 'مؤسسة حكومية طبية', max: 10, class: 'card-blue' },
+    { id: 'p1', name: 'مستشفى اليرموك التعليمي', icon: 'ph-hospital', desc: 'مؤسسة حكومية طبية', max: 40, class: 'card-blue' },
     { id: 'p2', name: 'مستشفى بعقوبة العام', icon: 'ph-hospital', desc: 'مؤسسة حكومية طبية', max: 10, class: 'card-green' },
     { id: 'p3', name: 'مستشفى بلد روز العام', icon: 'ph-hospital', desc: 'مؤسسة حكومية طبية', max: 10, class: 'card-green' },
     { id: 'p4', name: 'مستشفى بلد العام', icon: 'ph-hospital', desc: 'مؤسسة حكومية طبية', max: 10, class: 'card-blue' },
@@ -907,7 +907,7 @@ window.PLACES = [
     { id: 'p17', name: 'مستشفى عين التمر', icon: 'ph-hospital', desc: 'مؤسسة حكومية طبية', max: 10, class: 'card-blue' },
     { id: 'p18', name: 'حقل عكاز الغازي', icon: 'ph-lightning', desc: 'وزارة الكهرباء', max: 10, class: 'card-red' },
     { id: 'p19', name: 'مستشفى الحبوبي التعليمي', icon: 'ph-hospital', desc: 'دائرة صحة ذي قار', max: 10, class: 'card-green' },
-    { id: 'p20', name: 'الشركة العامة للفحص الهندسي', icon: 'ph-factory', desc: 'شركة عامة حكومية', max: 10, class: 'card-blue' },
+    { id: 'p20', name: 'الشركة العامة للفحص الهندسي', icon: 'ph-factory', desc: 'شركة عامة حكومية', max: 40, class: 'card-blue' },
     { id: 'p21', name: 'الشركة للسيارات والمعدات', icon: 'ph-car', desc: 'شركة عامة حكومية', max: 10, class: 'card-red' },
     { id: 'p22', name: 'مستشفى الرفاعي التعليمي', icon: 'ph-hospital', desc: 'مؤسسة حكومية طبية', max: 10, class: 'card-green' },
     { id: 'p23', name: 'مستشفى الشعب التعليمي', icon: 'ph-hospital', desc: 'مؤسسة حكومية طبية', max: 10, class: 'card-blue' },
@@ -916,7 +916,7 @@ window.PLACES = [
     { id: 'p26', name: 'مستشفى الصويرة العام', icon: 'ph-hospital', desc: 'مؤسسة حكومية طبية', max: 10, class: 'card-green' },
     { id: 'p27', name: 'مستشفى العزيزية العام', icon: 'ph-hospital', desc: 'مؤسسة حكومية طبية', max: 10, class: 'card-blue' },
     { id: 'p28', name: 'مستشفى الفلوجة التعليمي', icon: 'ph-hospital', desc: 'مؤسسة حكومية طبية', max: 10, class: 'card-green' },
-    { id: 'p29', name: 'مستشفى الكندي التعليمي', icon: 'ph-hospital', desc: 'مؤسسة حكومية طبية', max: 10, class: 'card-purple' },
+    { id: 'p29', name: 'مستشفى الكندي التعليمي', icon: 'ph-hospital', desc: 'مؤسسة حكومية طبية', max: 35, class: 'card-purple' },
     { id: 'p30', name: 'مستشفى المحمودية العام', icon: 'ph-hospital', desc: 'مؤسسة حكومية طبية', max: 10, class: 'card-green' },
     { id: 'p31', name: 'مركز صحي القدس', icon: 'ph-hospital', desc: 'مؤسسة حكومية طبية', max: 10, class: 'card-blue' },
     { id: 'p32', name: 'مستشفى ابن الهيثم التعليمي', icon: 'ph-hospital', desc: 'مؤسسة حكومية طبية', max: 10, class: 'card-green' },
@@ -1371,8 +1371,12 @@ window.generateStudentFormWord = function(id) {
     // تحديث حالة الطالب إلى (تم الرفع)
     updateDoc(doc(db, "students_v2", id), { hasReport: true }).catch(e=>console.log(e));
 
+    // حساب التسلسل الفعلي للطالب داخل المركز الخاص به للترقيم التلقائي
+    const acceptedInLoc = window.allStudents.filter(st => (st.status === 'مقبول' || st.status === 'مكتمل') && st.assignedPlace === (s.assignedPlace || s.p1));
+    const studentIndex = acceptedInLoc.findIndex(st => st.id === id) + 1;
+
     let tableRows = `<tr>
-        <td style="border: 1px solid black; padding: 10px; text-align: center; font-size: 16px;">1</td>
+        <td style="border: 1px solid black; padding: 10px; text-align: center; font-size: 16px;">${studentIndex > 0 ? studentIndex : 1}</td>
         <td style="border: 1px solid black; padding: 10px; text-align: center; font-size: 16px;">${s.name}</td>
         <td style="border: 1px solid black; padding: 10px; text-align: center; font-size: 16px;">الثالثة</td>
         <td style="border: 1px solid black; padding: 10px; text-align: center; font-size: 16px;">الصباحية</td>
@@ -1545,7 +1549,7 @@ window.exportAllStudentFormsWord = function() {
     let allFormsHtml = '';
     sts.forEach((s, index) => {
         let tableRows = `<tr>
-            <td style="border: 1px solid black; padding: 10px; text-align: center; font-size: 16px;">1</td>
+            <td style="border: 1px solid black; padding: 10px; text-align: center; font-size: 16px;">${index + 1}</td>
             <td style="border: 1px solid black; padding: 10px; text-align: center; font-size: 16px;">${s.name}</td>
             <td style="border: 1px solid black; padding: 10px; text-align: center; font-size: 16px;">الثالثة</td>
             <td style="border: 1px solid black; padding: 10px; text-align: center; font-size: 16px;">الصباحية</td>
