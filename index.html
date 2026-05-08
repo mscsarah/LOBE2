@@ -114,6 +114,18 @@
 </head>
 <body class="text-gray-800 bg-gray-50 dark:bg-navy-900 transition-colors duration-300">
 
+<!-- SVG Chroma Key Filter for Green Screen Removal -->
+<svg width="0" height="0" class="hidden" style="position: absolute;">
+    <filter id="green-screen">
+        <feColorMatrix type="matrix" values="
+            1   0   0   0   0
+            0   1   0   0   0
+            0   0   1   0   0
+            2  -3   2   0   1
+        "/>
+    </filter>
+</svg>
+
 <!-- Toast Notification -->
 <div id="toast" class="dark:border dark:border-white/10">رسالة النظام هنا</div>
 
@@ -186,9 +198,9 @@
                     </button>
                 </div>
                 
-                <!-- Animated Video Logo -->
-                <a href="#hero" class="flex items-center justify-end h-12 md:h-16 shrink-0 mix-blend-screen outline-none hover:scale-105 transition-transform duration-300">
-                    <video src="IMG_5948.MP4" autoplay loop muted playsinline class="h-full w-auto object-contain pointer-events-none" style="filter: brightness(1.2);"></video>
+                <!-- Animated Video Logo with Green Screen Filter -->
+                <a href="#hero" class="relative flex items-center justify-center h-16 md:h-20 w-32 md:w-48 shrink-0 outline-none hover:scale-105 transition-transform duration-300">
+                    <video src="IMG_5948.MP4" autoplay loop muted playsinline class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[220%] md:h-[280%] w-auto max-w-none object-contain pointer-events-none" style="filter: url(#green-screen) brightness(1.2);"></video>
                 </a>
             </div>
         </header>
@@ -197,10 +209,10 @@
     <!-- Sidebar Menu -->
     <div id="sidebar" class="fixed inset-y-0 right-0 w-72 bg-white dark:bg-navy-800 dark:border-l dark:border-white/10 shadow-2xl z-[60] transform translate-x-full transition-transform duration-300 flex flex-col pt-10">
         <div class="p-6 border-b dark:border-white/10 flex justify-between items-center mt-2">
-            <div class="h-10 bg-black rounded-lg flex items-center justify-center px-2 overflow-hidden shadow-inner">
-                <video src="IMG_5948.MP4" autoplay loop muted playsinline class="h-[140%] w-auto object-contain mix-blend-screen pointer-events-none"></video>
+            <div class="relative h-14 w-full bg-navy-900 rounded-xl flex items-center justify-center overflow-hidden shadow-inner border border-white/5">
+                <video src="IMG_5948.MP4" autoplay loop muted playsinline class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[280%] w-auto max-w-none object-contain pointer-events-none" style="filter: url(#green-screen);"></video>
             </div>
-            <button onclick="toggleSidebar()" class="text-gray-500 dark:text-gray-400 hover:text-red-500"><i class="ph ph-x text-2xl"></i></button>
+            <button onclick="toggleSidebar()" class="mr-4 text-gray-500 dark:text-gray-400 hover:text-red-500 shrink-0"><i class="ph ph-x text-2xl"></i></button>
         </div>
         <div class="flex-1 overflow-y-auto py-4">
             <nav class="flex flex-col gap-2 px-4">
@@ -226,8 +238,8 @@
         <div class="bg-white dark:bg-navy-800 w-full max-w-md rounded-3xl shadow-2xl relative z-10 p-8 transform scale-95 transition-transform border dark:border-white/10" id="login-box">
             <button onclick="closeLoginModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 dark:hover:text-white"><i class="ph ph-x text-xl"></i></button>
             <div class="text-center mb-6">
-                <div class="h-14 bg-black rounded-2xl mx-auto flex items-center justify-center mb-4 overflow-hidden w-20 shadow-inner">
-                    <video src="IMG_5948.MP4" autoplay loop muted playsinline class="h-[150%] w-auto object-contain mix-blend-screen pointer-events-none"></video>
+                <div class="relative h-20 bg-navy-900 rounded-2xl mx-auto flex items-center justify-center mb-4 overflow-hidden w-40 shadow-inner border border-white/5">
+                    <video src="IMG_5948.MP4" autoplay loop muted playsinline class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[280%] w-auto max-w-none object-contain pointer-events-none" style="filter: url(#green-screen);"></video>
                 </div>
                 <h3 class="text-2xl font-bold text-navy-900 dark:text-white">تسجيل الدخول</h3>
                 <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">للوصول إلى لوحة التحكم الخاصة بك</p>
@@ -544,11 +556,11 @@
             </div>
 
             <!-- Footer Text -->
-            <div class="text-center">
-                <div class="flex items-center justify-center mb-6 mix-blend-screen">
-                    <video src="IMG_5948.MP4" autoplay loop muted playsinline class="h-20 w-auto object-contain pointer-events-none hover:scale-105 transition-transform duration-300"></video>
+            <div class="text-center mt-10">
+                <div class="relative flex items-center justify-center mb-8 h-20 md:h-28">
+                    <video src="IMG_5948.MP4" autoplay loop muted playsinline class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[300%] md:h-[350%] w-auto max-w-none object-contain pointer-events-none hover:scale-105 transition-transform duration-300" style="filter: url(#green-screen);"></video>
                 </div>
-                <p class="text-gray-400 text-sm">© 2026 جامعة دجلة - كلية الهندسة - قسم هندسة الليزر والإلكترونيات البصرية. جميع الحقوق محفوظة.</p>
+                <p class="text-gray-400 text-sm mt-8">© 2026 جامعة دجلة - كلية الهندسة - قسم هندسة الليزر والإلكترونيات البصرية. جميع الحقوق محفوظة.</p>
             </div>
         </div>
     </footer>
@@ -560,8 +572,8 @@
     <header class="bg-navy-900 text-white h-20 flex items-center px-6 sticky top-0 z-40 shadow-md">
         <div class="w-full max-w-7xl mx-auto flex justify-between items-center">
             <div class="flex items-center gap-4">
-                <div class="h-12 w-16 bg-black rounded-lg flex items-center justify-center overflow-hidden shadow-inner border border-white/5">
-                    <video src="IMG_5948.MP4" autoplay loop muted playsinline class="h-[140%] w-auto object-contain mix-blend-screen pointer-events-none"></video>
+                <div class="relative h-14 w-28 bg-navy-900 rounded-lg flex items-center justify-center overflow-hidden shadow-inner border border-white/5">
+                    <video src="IMG_5948.MP4" autoplay loop muted playsinline class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[280%] w-auto max-w-none object-contain pointer-events-none" style="filter: url(#green-screen);"></video>
                 </div>
                 <div>
                     <h1 class="font-bold text-lg leading-tight" id="dash-title">لوحات التحكم</h1>
@@ -914,9 +926,9 @@ setInterval(() => {
 window.addEventListener('scroll', () => {
     const nav = document.getElementById('navbar');
     if(window.scrollY > 50) {
-        nav.classList.add('bg-navy-900/95', 'backdrop-blur-md', 'shadow-md', 'border-b', 'border-white/10');
+        nav.classList.add('bg-navy-900/95', 'backdrop-blur-md', 'shadow-md', 'dark:border-b', 'dark:border-white/10');
     } else {
-        nav.classList.remove('bg-navy-900/95', 'backdrop-blur-md', 'shadow-md', 'border-b', 'border-white/10');
+        nav.classList.remove('bg-navy-900/95', 'backdrop-blur-md', 'shadow-md', 'dark:border-b', 'dark:border-white/10');
     }
 });
 
