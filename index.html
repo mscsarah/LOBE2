@@ -926,9 +926,9 @@ setInterval(() => {
 window.addEventListener('scroll', () => {
     const nav = document.getElementById('navbar');
     if(window.scrollY > 50) {
-        nav.classList.add('bg-navy-900/95', 'backdrop-blur-md', 'shadow-md', 'dark:border-b', 'dark:border-white/10');
+        nav.classList.add('bg-navy-900/95', 'backdrop-blur-md', 'shadow-md', 'border-b', 'border-white/10');
     } else {
-        nav.classList.remove('bg-navy-900/95', 'backdrop-blur-md', 'shadow-md', 'dark:border-b', 'dark:border-white/10');
+        nav.classList.remove('bg-navy-900/95', 'backdrop-blur-md', 'shadow-md', 'border-b', 'border-white/10');
     }
 });
 
@@ -1349,7 +1349,11 @@ window.markReportAsUploaded = async function() {
     }, 1500);
 
     if(window.currentStudentId) { 
-        try { await updateDoc(doc(db, "students_v2", window.currentStudentId), { hasReport: true }); } catch(e) {} 
+        try { 
+            await updateDoc(doc(db, "students_v2", window.currentStudentId), { hasReport: true }); 
+        } catch(e) {
+            console.log("خطأ في التحديث");
+        } 
     }
 };
 
@@ -1503,7 +1507,7 @@ window.generateLocationLetter = function() {
             @media print { @page { margin: 1.5cm; } }
         </style>
     </head>
-    <body>
+    <body onload="window.print()">
         <div class="header">
             جامعة دجلة<br>
             كلية الهندسة<br>
@@ -1523,9 +1527,6 @@ window.generateLocationLetter = function() {
             </thead>
             <tbody>${tableRows}</tbody>
         </table>
-        <script>
-            window.onload = function() { window.print(); }
-        <\/script>
     </body>
     </html>
     `;
