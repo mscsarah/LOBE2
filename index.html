@@ -186,14 +186,10 @@
                     </button>
                 </div>
                 
-                <!-- Logo -->
-                <div class="flex items-center gap-3 text-right">
-                    <div class="flex flex-col text-white">
-                        <span class="font-black text-xl tracking-wider leading-none">LOBEST</span>
-                        <span class="text-[10px] text-gray-300">Laser & Optoelectronics</span>
-                    </div>
-                    <div class="w-10 h-10 bg-black dark:bg-white dark:text-black rounded flex items-center justify-center text-white font-bold text-xl">L</div>
-                </div>
+                <!-- Animated Video Logo -->
+                <a href="#hero" class="flex items-center justify-end h-12 md:h-16 shrink-0 mix-blend-screen outline-none hover:scale-105 transition-transform duration-300">
+                    <video src="IMG_5948.MP4" autoplay loop muted playsinline class="h-full w-auto object-contain pointer-events-none" style="filter: brightness(1.2);"></video>
+                </a>
             </div>
         </header>
     </div>
@@ -201,7 +197,9 @@
     <!-- Sidebar Menu -->
     <div id="sidebar" class="fixed inset-y-0 right-0 w-72 bg-white dark:bg-navy-800 dark:border-l dark:border-white/10 shadow-2xl z-[60] transform translate-x-full transition-transform duration-300 flex flex-col pt-10">
         <div class="p-6 border-b dark:border-white/10 flex justify-between items-center mt-2">
-            <div class="w-8 h-8 bg-black dark:bg-white dark:text-black rounded flex items-center justify-center text-white font-bold">L</div>
+            <div class="h-10 bg-black rounded-lg flex items-center justify-center px-2 overflow-hidden shadow-inner">
+                <video src="IMG_5948.MP4" autoplay loop muted playsinline class="h-[140%] w-auto object-contain mix-blend-screen pointer-events-none"></video>
+            </div>
             <button onclick="toggleSidebar()" class="text-gray-500 dark:text-gray-400 hover:text-red-500"><i class="ph ph-x text-2xl"></i></button>
         </div>
         <div class="flex-1 overflow-y-auto py-4">
@@ -228,7 +226,9 @@
         <div class="bg-white dark:bg-navy-800 w-full max-w-md rounded-3xl shadow-2xl relative z-10 p-8 transform scale-95 transition-transform border dark:border-white/10" id="login-box">
             <button onclick="closeLoginModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 dark:hover:text-white"><i class="ph ph-x text-xl"></i></button>
             <div class="text-center mb-6">
-                <div class="w-12 h-12 bg-navy-900 dark:bg-white dark:text-black rounded-xl mx-auto flex items-center justify-center text-white text-2xl font-bold mb-3">L</div>
+                <div class="h-14 bg-black rounded-2xl mx-auto flex items-center justify-center mb-4 overflow-hidden w-20 shadow-inner">
+                    <video src="IMG_5948.MP4" autoplay loop muted playsinline class="h-[150%] w-auto object-contain mix-blend-screen pointer-events-none"></video>
+                </div>
                 <h3 class="text-2xl font-bold text-navy-900 dark:text-white">تسجيل الدخول</h3>
                 <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">للوصول إلى لوحة التحكم الخاصة بك</p>
             </div>
@@ -348,7 +348,7 @@
             </div>
 
             <!-- Dynamic Stats Grid -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-12">
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6 mb-12">
                 <div class="bg-white dark:bg-navy-900 border border-gray-100 dark:border-white/5 shadow-sm rounded-2xl p-6 text-center hover:shadow-md transition">
                     <i class="ph ph-buildings text-4xl text-blue-500 mb-3 mx-auto block"></i>
                     <h3 class="text-3xl font-black text-navy-900 dark:text-white" id="stat-places">0</h3>
@@ -368,6 +368,12 @@
                     <i class="ph ph-book-open text-4xl text-gold mb-3 mx-auto block"></i>
                     <h3 class="text-3xl font-black text-navy-900 dark:text-white" id="stat-total">0</h3>
                     <p class="text-gray-500 dark:text-gray-400 text-sm font-bold">إجمالي المقاعد الكلية</p>
+                </div>
+                <div class="bg-white dark:bg-navy-900 border border-gray-100 dark:border-white/5 shadow-sm rounded-2xl p-6 text-center hover:shadow-md transition border-b-4 border-b-red-500 col-span-2 md:col-span-1 flex flex-col justify-center">
+                    <i class="ph ph-users text-4xl text-red-500 mb-2 mx-auto block"></i>
+                    <h3 class="text-3xl font-black text-navy-900 dark:text-white" id="stat-views">0</h3>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm font-bold">إجمالي الزوار</p>
+                    <p class="text-gray-400 dark:text-gray-500 text-[10px] mt-1">منذ إطلاق المنصة</p>
                 </div>
             </div>
         </div>
@@ -539,9 +545,8 @@
 
             <!-- Footer Text -->
             <div class="text-center">
-                <div class="flex items-center justify-center gap-3 mb-4">
-                    <div class="w-10 h-10 bg-white rounded flex items-center justify-center text-navy-900 font-black text-lg">L</div>
-                    <span class="font-bold text-2xl tracking-widest text-white">LOBEST</span>
+                <div class="flex items-center justify-center mb-6 mix-blend-screen">
+                    <video src="IMG_5948.MP4" autoplay loop muted playsinline class="h-20 w-auto object-contain pointer-events-none hover:scale-105 transition-transform duration-300"></video>
                 </div>
                 <p class="text-gray-400 text-sm">© 2026 جامعة دجلة - كلية الهندسة - قسم هندسة الليزر والإلكترونيات البصرية. جميع الحقوق محفوظة.</p>
             </div>
@@ -554,8 +559,10 @@
     <!-- Dash Header -->
     <header class="bg-navy-900 text-white h-20 flex items-center px-6 sticky top-0 z-40 shadow-md">
         <div class="w-full max-w-7xl mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-white rounded flex items-center justify-center text-navy-900 font-black text-xl">L</div>
+            <div class="flex items-center gap-4">
+                <div class="h-12 w-16 bg-black rounded-lg flex items-center justify-center overflow-hidden shadow-inner border border-white/5">
+                    <video src="IMG_5948.MP4" autoplay loop muted playsinline class="h-[140%] w-auto object-contain mix-blend-screen pointer-events-none"></video>
+                </div>
                 <div>
                     <h1 class="font-bold text-lg leading-tight" id="dash-title">لوحات التحكم</h1>
                     <p class="text-xs text-gold" id="dash-subtitle">عام 2026</p>
@@ -694,7 +701,7 @@
 <!-- Firebase & Logic script -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, getDoc, setDoc, increment } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCL6pp1swXfyWU3wtIDVJF8yXzvJ5gdFwg",
@@ -712,6 +719,39 @@ const db = getFirestore(app);
 window.allStudents = [];
 window.currentUserRole = 'guest'; 
 window.currentStudentId = null;
+
+// Page Views Counter Logic (All-Time)
+const viewsRef = doc(db, "site_stats", "visits_all_time");
+
+// رقم إضافي يمثل الزيارات القديمة للمنصة (يمكنك تغييره للرقم الذي يعكس زواركم قبل إضافة العداد)
+const BASE_HISTORICAL_VIEWS = 850; 
+
+async function recordVisit() {
+    // استخدمنا localStorage لضمان حساب الشخص مرة واحدة فقط من نفس الجهاز (زوار حقيقيين)
+    if(!localStorage.getItem('visited_lobest_2026')) {
+        try {
+            const docSnap = await getDoc(viewsRef);
+            if(docSnap.exists()) {
+                await updateDoc(viewsRef, { count: increment(1) });
+            } else {
+                await setDoc(viewsRef, { count: 1 });
+            }
+            localStorage.setItem('visited_lobest_2026', 'true');
+        } catch(e) {
+            console.log("Visit count error:", e);
+        }
+    }
+}
+recordVisit();
+
+onSnapshot(viewsRef, (doc) => {
+    const viewsElement = document.getElementById('stat-views');
+    if(viewsElement) {
+        const actualCount = doc.exists() ? doc.data().count : 0;
+        // عرض الزيارات الحقيقية الجديدة + الزيارات التاريخية السابقة
+        viewsElement.innerText = actualCount + BASE_HISTORICAL_VIEWS;
+    }
+});
 
 // Live Stream Logic
 let hls;
