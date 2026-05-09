@@ -423,7 +423,6 @@
                                             <option value="الأنبار">الأنبار</option><option value="النجف">النجف</option><option value="كربلاء">كربلاء</option>
                                             <option value="كركوك">كركوك</option><option value="واسط">واسط</option><option value="ميسان">ميسان</option>
                                             <option value="صلاح الدين">صلاح الدين</option><option value="المثنى">المثنى</option><option value="القادسية">القادسية</option>
-                                            <option value="الديوانية">الديوانية</option>
                                             <option value="السليمانية">السليمانية</option><option value="دهوك">دهوك</option><option value="حلبجة">حلبجة</option>
                                             <option value="أخرى">أخرى</option>
                                         </select>
@@ -608,15 +607,18 @@
             <div class="bg-amber-50 dark:bg-amber-900/20 p-6 rounded-2xl border border-amber-200 dark:border-amber-700/50 shadow-sm mb-8">
                 <h3 class="text-lg font-bold text-amber-700 dark:text-amber-500 mb-1 flex items-center gap-2"><i class="ph-fill ph-lightning"></i> إجراءات الطوارئ السريعة (ضغطة زر واحدة)</h3>
                 <p class="text-sm text-amber-600/80 dark:text-amber-400/80 mb-4">أدوات مخصصة للسرعة لتنفيذ الأوامر على <b>جميع الطلاب والمراكز</b> دفعة واحدة.</p>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    <button class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 shadow" onclick="window.bulkApproveAll()">
-                        <i class="ph ph-check-square"></i> قبول كل طلبات الانتظار
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                    <button class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 shadow text-sm" onclick="window.bulkApproveAll()">
+                        <i class="ph ph-check-square text-lg"></i> قبول كل طلبات الانتظار
                     </button>
-                    <button class="bg-green-500 hover:bg-green-600 text-white px-4 py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 shadow" onclick="window.bulkMarkAllUploaded()">
-                        <i class="ph ph-upload-simple"></i> تأشير "تم الرفع" للجميع
+                    <button class="bg-red-500 hover:bg-red-600 text-white px-4 py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 shadow text-sm" onclick="window.bulkCancelAll()">
+                        <i class="ph ph-x-square text-lg"></i> إلغاء القبول للجميع
                     </button>
-                    <button class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 shadow" onclick="window.bulkExportAllFormsWord()">
-                        <i class="ph ph-printer"></i> طباعة استمارات الكل (Word)
+                    <button class="bg-green-500 hover:bg-green-600 text-white px-4 py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 shadow text-sm" onclick="window.bulkMarkAllUploaded()">
+                        <i class="ph ph-upload-simple text-lg"></i> تأشير "تم الرفع" للجميع
+                    </button>
+                    <button class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 shadow text-sm" onclick="window.bulkExportAllFormsWord()">
+                        <i class="ph ph-printer text-lg"></i> طباعة استمارات الكل (Word)
                     </button>
                 </div>
             </div>
@@ -1433,6 +1435,23 @@ window.bulkApproveAll = async function() {
         }
     } else {
         window.showToast('لم يتم العثور على مراكز مسجلة للطلاب.', 'error');
+    }
+};
+
+window.bulkCancelAll = async function() {
+    if(!confirm("هل أنت متأكد من إلغاء قبول جميع الطلاب المقبولين وإعادتهم إلى حالة (انتظار)؟")) return;
+    const accepted = window.allStudents.filter(s => s.status === 'مقبول' || s.status === 'مكتمل');
+    if(!accepted.length) return window.showToast('لا يوجد طلاب مقبولين لإلغاء قبولهم', 'info');
+    
+    window.showToast('جاري إلغاء القبول للجميع، يرجى الانتظار...', 'info');
+    
+    let promises = accepted.map(s => updateDoc(window.getDocRef("students_v2", s.id), { status: 'انتظار', assignedPlace: '', hasReport: false }));
+    
+    try {
+        await Promise.all(promises);
+        window.showToast(`تم إلغاء قبول ${accepted.length} طالب بنجاح!`, 'success');
+    } catch(e) {
+        window.showToast('حدث خطأ أثناء الاتصال بقاعدة البيانات', 'error');
     }
 };
 
