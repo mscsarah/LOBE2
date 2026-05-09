@@ -1023,9 +1023,10 @@ window.updateExportSelect = function() {
 
     let options = '<option value="" disabled selected>-- اختر المركز لطباعة الكتاب --</option>';
     uniqueLocations.forEach(loc => {
-        const total = acceptedStudents.filter(s => s.assignedPlace === loc).length;
+        const totalStudentsInLoc = acceptedStudents.filter(s => s.assignedPlace === loc).length;
         const uploadedCount = acceptedStudents.filter(s => s.assignedPlace === loc && s.hasReport === true).length;
-        options += `<option value="${loc}">${loc} (${uploadedCount} تم الرفع / من أصل ${total})</option>`;
+        // تم تغيير النص ليكون أكثر وضوحاً ولا يختلط مع "السعة القصوى" للمركز
+        options += `<option value="${loc}">${loc} (${uploadedCount} تم الرفع من إجمالي ${totalStudentsInLoc} طالب مقبول)</option>`;
     });
     
     select.innerHTML = options;
