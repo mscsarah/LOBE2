@@ -1482,7 +1482,6 @@ window.generateStudentFormWord = function(id) {
     <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
     <head><meta charset="utf-8"><title>استمارة الطالب</title></head>
     <body style="font-family: 'Times New Roman', Arial, sans-serif; direction: rtl; text-align: right;">
-        <br><br><br><br><br><br><br><br><br><br><br>
         <div style="text-align: center; font-weight: bold; font-size: 22px; line-height: 1.8; margin-bottom: 25px;">
             جامعة دجلة<br>
             كلية الهندسة<br>
@@ -1491,7 +1490,7 @@ window.generateStudentFormWord = function(id) {
             مدة التدريب (1\\7) الى (31\\7)<br>
             اسماء الطلبة الراغبين بالتدريب للعام الدراسي 2025-2026
         </div>
-        <table style="width: 85%; margin: 0 auto; border-collapse: collapse; text-align: center;" border="1">
+        <table align="center" style="width: 85%; margin: 0 auto; border-collapse: collapse; text-align: center;" border="1">
             <thead>
                 <tr>
                     <th style="border: 1px solid black; padding: 15px; background-color: #f9f9f9; font-size: 18px; width: 10%;">ت</th>
@@ -1547,7 +1546,6 @@ window.exportAllStudentFormsWord = function() {
         </tr>`;
         
         allFormsHtml += `
-        <br><br><br><br><br><br><br><br><br><br><br>
         <div style="text-align: center; font-weight: bold; font-size: 22px; line-height: 1.8; margin-bottom: 25px;">
             جامعة دجلة<br>
             كلية الهندسة<br>
@@ -1556,7 +1554,7 @@ window.exportAllStudentFormsWord = function() {
             مدة التدريب (1\\7) الى (31\\7)<br>
             اسماء الطلبة الراغبين بالتدريب للعام الدراسي 2025-2026
         </div>
-        <table style="width: 85%; margin: 0 auto; border-collapse: collapse; margin-bottom: 40px; text-align: center;" border="1">
+        <table align="center" style="width: 85%; margin: 0 auto; border-collapse: collapse; margin-bottom: 40px; text-align: center;" border="1">
             <thead>
                 <tr>
                     <th style="border: 1px solid black; padding: 15px; background-color: #f9f9f9; font-size: 18px; width: 10%;">ت</th>
@@ -1569,7 +1567,7 @@ window.exportAllStudentFormsWord = function() {
         </table>
         `;
         
-        // كود الفاصل لإنشاء ورقة جديدة لكل طالب (متوافق مع الوورد)
+        // كود الفاصل لإنشاء ورقة جديدة لكل طالب
         if(index < sts.length - 1) {
             allFormsHtml += `<br clear="all" style="mso-special-character:line-break;page-break-before:always" />`;
         }
