@@ -1594,9 +1594,9 @@ window.exportAllStudentFormsWord = function() {
         </table>
         `;
         
-        // كود الفاصل لإنشاء ورقة جديدة لكل طالب
+        // كود الفاصل لإنشاء ورقة جديدة لكل طالب (متوافق تماماً مع Microsoft Word)
         if(index < sts.length - 1) {
-            allFormsHtml += `<br clear="all" style="page-break-before:always" />`;
+            allFormsHtml += `<br clear=all style='mso-special-character:line-break;page-break-before:always'>`;
         }
     });
 
@@ -1704,7 +1704,7 @@ window.bulkExportAllFormsWord = function() {
             
             totalProcessed++;
             if(totalProcessed < sts.length) {
-                allFormsHtml += `<br clear="all" style="page-break-before:always" />`;
+                allFormsHtml += `<br clear=all style='mso-special-character:line-break;page-break-before:always'>`;
             }
         });
     }
