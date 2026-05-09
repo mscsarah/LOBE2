@@ -974,11 +974,12 @@ window.renderPlaces = function() {
     
     window.PLACES.forEach(p => {
         const acc = window.allStudents.filter(s => (s.status === 'مقبول' || s.status === 'مكتمل') && s.assignedPlace === p.name).length;
-        const percent = Math.min((acc / p.max) * 100, 100); 
+        const requested = window.allStudents.filter(s => s.p1 === p.name).length;
+        const dynamicMax = Math.max(p.max, requested, acc); // يتمدد الرقم حسب عدد الطلاب المتقدمين
+        const percent = dynamicMax === 0 ? 0 : Math.min((acc / dynamicMax) * 100, 100); 
         
-        let statusPill = `<div class="pill available"><i class="ph-fill ph-check-circle"></i> متاح</div>`;
-        if(acc >= p.max) statusPill = `<div class="pill full"><i class="ph-fill ph-x-circle"></i> ممتلئ</div>`;
-        else if(acc >= p.max - 2) statusPill = `<div class="pill wait"><i class="ph-fill ph-warning-circle"></i> قريب من الامتلاء</div>`;
+        // إزالة القيود وإظهار المركز دائماً على أنه متاح
+        let statusPill = `<div class="pill available"><i class="ph-fill ph-check-circle"></i> متاح دائماً</div>`;
 
         html += `
         <div class="rounded-[2rem] p-6 relative flex flex-col h-full ${p.class} transition hover:shadow-md border">
@@ -993,10 +994,10 @@ window.renderPlaces = function() {
             
             <div class="mt-auto pt-4 border-t border-black/5 dark:border-white/10">
                 <div class="flex justify-between text-sm mb-2">
-                    <span class="font-bold text-navy-900 dark:text-white">${acc} / ${p.max} مقاعد</span>
+                    <span class="font-bold text-navy-900 dark:text-white">${acc} / ${dynamicMax} مقاعد</span>
                 </div>
                 <div class="w-full bg-black/10 dark:bg-black/30 rounded-full h-2 overflow-hidden">
-                    <div class="bg-blue-600 dark:bg-blue-500 h-2 rounded-full transition-all duration-500 ${acc >= p.max ? 'bg-red-500 dark:bg-red-500' : ''}" style="width: ${percent}%"></div>
+                    <div class="bg-blue-600 dark:bg-blue-500 h-2 rounded-full transition-all duration-500" style="width: ${percent}%"></div>
                 </div>
             </div>
         </div>`;
@@ -1038,7 +1039,15 @@ window.updateExportSelect = function() {
 window.updateUI = function() {
     document.getElementById('stat-registered').innerText = window.allStudents.length;
     document.getElementById('stat-places').innerText = window.PLACES.length;
-    document.getElementById('stat-total').innerText = window.PLACES.reduce((sum, place) => sum + place.max, 0);
+    
+    // حساب السعة الكلية الديناميكية
+    const totalCapacity = window.PLACES.reduce((sum, place) => {
+        const requested = window.allStudents.filter(s => s.p1 === place.name).length;
+        const acc = window.allStudents.filter(s => (s.status === 'مقبول' || s.status === 'مكتمل') && s.assignedPlace === place.name).length;
+        return sum + Math.max(place.max, requested, acc);
+    }, 0);
+    
+    document.getElementById('stat-total').innerText = totalCapacity;
 
     window.renderPlaces();
     if(window.currentUserRole === 'admin') {
@@ -1224,17 +1233,8 @@ window.acceptStudent = async function(id) {
     const s = window.allStudents.find(x => x.id === id);
     if(!s) return;
     
-    const placeObj = window.PLACES.find(pl => pl.name === s.p1);
-    const currentAccepted = window.allStudents.filter(st => (st.status === 'مقبول' || st.status === 'مكتمل') && st.assignedPlace === s.p1).length;
-    
-    // تعديل: تنبيه فقط، مع السماح بقبول الطالب وتجاوز السعة
-    if(placeObj && currentAccepted >= placeObj.max) {
-        if(!confirm(`تنبيه: المكان المختار (${placeObj.name}) ممتلئ بالكامل (${placeObj.max} مقاعد).\n\nهل تريد تجاوز الحد الأقصى وقبول الطالب في هذا المركز؟`)) {
-            return;
-        }
-    }
-    
     try { 
+        // لا يوجد أي قيد على المقاعد، يقبل الطالب مباشرة في المركز الذي طلبه
         await updateDoc(doc(db, "students_v2", id), { status: 'مقبول', assignedPlace: s.p1 }); 
         window.showToast(`تم قبول الطالب بنجاح`, 'success'); 
         
@@ -1351,7 +1351,7 @@ window.sendSummaryEmail = function() {
 }
 
 window.bulkApproveAll = async function() {
-    if(!confirm("هل أنت متأكد من الموافقة على جميع الطلبات المعلقة دفعة واحدة؟ (سيتم توزيع جميع الطلاب حسب اختيارهم الأول وتجاوز الحد الأقصى للمقاعد)")) return;
+    if(!confirm("هل أنت متأكد من الموافقة على جميع الطلبات المعلقة دفعة واحدة؟ (سيتم توزيع جميع الطلاب حسب اختيارهم الأول)")) return;
     const waiting = window.allStudents.filter(s => s.status === 'انتظار');
     if(!waiting.length) return window.showToast('لا توجد طلبات معلقة', 'info');
     window.showToast('جاري معالجة الطلبات وتوزيع الطلاب، يرجى الانتظار...', 'info');
