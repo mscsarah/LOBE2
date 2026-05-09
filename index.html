@@ -603,6 +603,23 @@
                 </div>
             </div>
 
+            <!-- ⚡ إجراءات سريعة (للضرورة والسرعة) -->
+            <div class="bg-amber-50 dark:bg-amber-900/20 p-6 rounded-2xl border border-amber-200 dark:border-amber-700/50 shadow-sm mb-8">
+                <h3 class="text-lg font-bold text-amber-700 dark:text-amber-500 mb-1 flex items-center gap-2"><i class="ph-fill ph-lightning"></i> إجراءات الطوارئ السريعة (ضغطة زر واحدة)</h3>
+                <p class="text-sm text-amber-600/80 dark:text-amber-400/80 mb-4">أدوات مخصصة للسرعة لتنفيذ الأوامر على <b>جميع الطلاب والمراكز</b> دفعة واحدة.</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <button class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 shadow" onclick="window.bulkApproveAll()">
+                        <i class="ph ph-check-square"></i> قبول كل طلبات الانتظار
+                    </button>
+                    <button class="bg-green-500 hover:bg-green-600 text-white px-4 py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 shadow" onclick="window.bulkMarkAllUploaded()">
+                        <i class="ph ph-upload-simple"></i> تأشير "تم الرفع" للجميع
+                    </button>
+                    <button class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 shadow" onclick="window.bulkExportAllFormsWord()">
+                        <i class="ph ph-printer"></i> طباعة استمارات الكل (Word)
+                    </button>
+                </div>
+            </div>
+
             <!-- Export Letters Card -->
             <div class="bg-blue-50/30 dark:bg-[#0b132b] p-6 rounded-2xl border border-blue-100 dark:border-blue-900/50 shadow-sm mb-8">
                 <h3 class="text-lg font-bold text-blue-900 dark:text-blue-300 mb-1 flex items-center gap-2"><i class="ph ph-printer"></i> إصدار الكتب الرسمية (حسب المركز)</h3>
@@ -1595,6 +1612,114 @@ window.exportAllStudentFormsWord = function() {
     
     window.showToast('تم تحميل الاستمارات الفردية بنجاح', 'success');
     window.notifyStudentsOfLetter(sts, loc);
+};
+
+window.bulkApproveAll = async function() {
+    if(!confirm("هل أنت متأكد من الموافقة على جميع الطلبات المعلقة دفعة واحدة؟ سيتم التوزيع آلياً حسب توفر المقاعد.")) return;
+    const waiting = window.allStudents.filter(s => s.status === 'انتظار');
+    if(!waiting.length) return window.showToast('لا توجد طلبات معلقة', 'info');
+    window.showToast('جاري معالجة الطلبات، يرجى الانتظار...', 'info');
+    
+    let approvedCount = 0;
+    let promises = [];
+    
+    let currentCapacities = {};
+    window.PLACES.forEach(p => {
+        currentCapacities[p.name] = window.allStudents.filter(st => (st.status === 'مقبول' || st.status === 'مكتمل') && st.assignedPlace === p.name).length;
+    });
+
+    for(let s of waiting) {
+        const placeObj = window.PLACES.find(pl => pl.name === s.p1);
+        if(placeObj && currentCapacities[s.p1] < placeObj.max) {
+            promises.push(updateDoc(doc(db, "students_v2", s.id), { status: 'مقبول', assignedPlace: s.p1 }));
+            currentCapacities[s.p1]++;
+            approvedCount++;
+        }
+    }
+    
+    if(promises.length > 0) {
+        await Promise.all(promises);
+        window.showToast(`تمت الموافقة على ${approvedCount} طالب بنجاح!`, 'success');
+    } else {
+        window.showToast('لم يتم قبول أحد، جميع المراكز المطلوبة ممتلئة بالكامل.', 'error');
+    }
+};
+
+window.bulkMarkAllUploaded = async function() {
+    if(!confirm("هل أنت متأكد من تحويل جميع الطلاب المقبولين في جميع المراكز إلى (تم الرفع)؟")) return;
+    const accepted = window.allStudents.filter(s => (s.status === 'مقبول' || s.status === 'مكتمل') && !s.hasReport);
+    if(!accepted.length) return window.showToast('جميع الطلاب مؤشرين كـ (تم الرفع) مسبقاً', 'info');
+    
+    window.showToast('جاري التحديث للجميع...', 'info');
+    let promises = accepted.map(s => updateDoc(doc(db, "students_v2", s.id), { hasReport: true }));
+    await Promise.all(promises);
+    window.showToast(`تم تحديث ${accepted.length} طالب بنجاح!`, 'success');
+};
+
+window.bulkExportAllFormsWord = function() {
+    const sts = window.allStudents.filter(s => (s.status === 'مقبول' || s.status === 'مكتمل') && s.hasReport);
+    if(!sts.length) return window.showToast('لا يوجد طلاب حالتهم (تم الرفع) لطباعة استماراتهم', 'error');
+
+    let allFormsHtml = '';
+    const groupedByLoc = {};
+    
+    // تجميع الطلاب حسب مراكزهم لضمان الترقيم الصحيح (1، 2، 3) لكل مركز
+    sts.forEach(s => {
+        if(!groupedByLoc[s.assignedPlace]) groupedByLoc[s.assignedPlace] = [];
+        groupedByLoc[s.assignedPlace].push(s);
+    });
+
+    let totalProcessed = 0;
+    for (const loc in groupedByLoc) {
+        const studentsInLoc = groupedByLoc[loc];
+        studentsInLoc.forEach((s, index) => {
+            let tableRows = `<tr>
+                <td style="border: 1px solid black; padding: 10px; text-align: center; font-size: 16px;">${index + 1}</td>
+                <td style="border: 1px solid black; padding: 10px; text-align: center; font-size: 16px;">${s.name}</td>
+                <td style="border: 1px solid black; padding: 10px; text-align: center; font-size: 16px;">الثالثة</td>
+                <td style="border: 1px solid black; padding: 10px; text-align: center; font-size: 16px;">الصباحية</td>
+            </tr>`;
+            
+            allFormsHtml += `
+            <div style="text-align: center; font-weight: bold; font-size: 20px; line-height: 1.8; margin-bottom: 25px;">
+                جامعة دجلة<br>
+                كلية الهندسة<br>
+                قسم الليزر والالكترونيات البصرية<br>
+                اسم المؤسسة الحكومية (${loc})<br>
+                مدة التدريب (1\\7) الى (31\\7)<br>
+                اسماء الطلبة الراغبين بالتدريب للعام الدراسي 2025-2026
+            </div>
+            <table style="width: 100%; border-collapse: collapse; margin-top: 20px; margin-bottom: 40px;" border="1">
+                <thead>
+                    <tr>
+                        <th style="border: 1px solid black; padding: 12px; background-color: #f2f2f2; font-size: 16px;">ت</th>
+                        <th style="border: 1px solid black; padding: 12px; background-color: #f2f2f2; font-size: 16px;">اسم الطالب</th>
+                        <th style="border: 1px solid black; padding: 12px; background-color: #f2f2f2; font-size: 16px;">المرحلة</th>
+                        <th style="border: 1px solid black; padding: 12px; background-color: #f2f2f2; font-size: 16px;">نوع الدراسة</th>
+                    </tr>
+                </thead>
+                <tbody>${tableRows}</tbody>
+            </table>
+            `;
+            
+            totalProcessed++;
+            if(totalProcessed < sts.length) {
+                allFormsHtml += `<br clear="all" style="page-break-before:always" />`;
+            }
+        });
+    }
+
+    const htmlContent = `
+    <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+    <head><meta charset="utf-8"><title>استمارات جميع الطلاب</title></head>
+    <body style="font-family: 'Arial', sans-serif; direction: rtl; text-align: right;">
+        ${allFormsHtml}
+    </body></html>`;
+
+    const blob = new Blob(['\ufeff', htmlContent], { type: 'application/msword' });
+    const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `استمارات_كل_الطلاب_والمراكز.doc`; link.click();
+    
+    window.showToast('تم تحميل استمارات كل الطلاب بنجاح', 'success');
 };
 
 // Init run
