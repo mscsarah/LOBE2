@@ -423,6 +423,7 @@
                                             <option value="الأنبار">الأنبار</option><option value="النجف">النجف</option><option value="كربلاء">كربلاء</option>
                                             <option value="كركوك">كركوك</option><option value="واسط">واسط</option><option value="ميسان">ميسان</option>
                                             <option value="صلاح الدين">صلاح الدين</option><option value="المثنى">المثنى</option><option value="القادسية">القادسية</option>
+                                            <option value="الديوانية">الديوانية</option>
                                             <option value="السليمانية">السليمانية</option><option value="دهوك">دهوك</option><option value="حلبجة">حلبجة</option>
                                             <option value="أخرى">أخرى</option>
                                         </select>
@@ -1481,34 +1482,33 @@ window.generateStudentFormWord = function(id) {
     <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
     <head><meta charset="utf-8"><title>استمارة الطالب</title></head>
     <body style="font-family: 'Times New Roman', Arial, sans-serif; direction: rtl; text-align: right;">
-        <div style="padding-top: 250px;"> <!-- الدفع لمنتصف الصفحة -->
-            <div style="text-align: center; font-weight: bold; font-size: 22px; line-height: 1.8; margin-bottom: 25px;">
-                جامعة دجلة<br>
-                كلية الهندسة<br>
-                قسم الليزر والالكترونيات البصرية<br>
-                اسم المؤسسة الحكومية (${s.assignedPlace || s.p1})<br>
-                مدة التدريب (1\\7) الى (31\\7)<br>
-                اسماء الطلبة الراغبين بالتدريب للعام الدراسي 2025-2026
-            </div>
-            <table style="width: 85%; margin: 0 auto; border-collapse: collapse; text-align: center;" border="1">
-                <thead>
-                    <tr>
-                        <th style="border: 1px solid black; padding: 15px; background-color: #f9f9f9; font-size: 18px; width: 10%;">ت</th>
-                        <th style="border: 1px solid black; padding: 15px; background-color: #f9f9f9; font-size: 18px; width: 50%;">اسم الطالب</th>
-                        <th style="border: 1px solid black; padding: 15px; background-color: #f9f9f9; font-size: 18px; width: 20%;">المرحلة</th>
-                        <th style="border: 1px solid black; padding: 15px; background-color: #f9f9f9; font-size: 18px; width: 20%;">نوع الدراسة</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td style="border: 1px solid black; padding: 15px; font-size: 16px;">${studentIndex > 0 ? studentIndex : 1}</td>
-                        <td style="border: 1px solid black; padding: 15px; font-size: 16px; font-weight: bold;">${s.name}</td>
-                        <td style="border: 1px solid black; padding: 15px; font-size: 16px;">الثالثة</td>
-                        <td style="border: 1px solid black; padding: 15px; font-size: 16px;">الصباحية</td>
-                    </tr>
-                </tbody>
-            </table>
+        <br><br><br><br><br><br><br><br><br><br><br>
+        <div style="text-align: center; font-weight: bold; font-size: 22px; line-height: 1.8; margin-bottom: 25px;">
+            جامعة دجلة<br>
+            كلية الهندسة<br>
+            قسم الليزر والالكترونيات البصرية<br>
+            اسم المؤسسة الحكومية (${s.assignedPlace || s.p1})<br>
+            مدة التدريب (1\\7) الى (31\\7)<br>
+            اسماء الطلبة الراغبين بالتدريب للعام الدراسي 2025-2026
         </div>
+        <table style="width: 85%; margin: 0 auto; border-collapse: collapse; text-align: center;" border="1">
+            <thead>
+                <tr>
+                    <th style="border: 1px solid black; padding: 15px; background-color: #f9f9f9; font-size: 18px; width: 10%;">ت</th>
+                    <th style="border: 1px solid black; padding: 15px; background-color: #f9f9f9; font-size: 18px; width: 50%;">اسم الطالب</th>
+                    <th style="border: 1px solid black; padding: 15px; background-color: #f9f9f9; font-size: 18px; width: 20%;">المرحلة</th>
+                    <th style="border: 1px solid black; padding: 15px; background-color: #f9f9f9; font-size: 18px; width: 20%;">نوع الدراسة</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="border: 1px solid black; padding: 15px; font-size: 16px;">${studentIndex > 0 ? studentIndex : 1}</td>
+                    <td style="border: 1px solid black; padding: 15px; font-size: 16px; font-weight: bold;">${s.name}</td>
+                    <td style="border: 1px solid black; padding: 15px; font-size: 16px;">الثالثة</td>
+                    <td style="border: 1px solid black; padding: 15px; font-size: 16px;">الصباحية</td>
+                </tr>
+            </tbody>
+        </table>
     </body></html>`;
 
     const blob = new Blob(['\ufeff', htmlContent], { type: 'application/msword' });
@@ -1547,27 +1547,26 @@ window.exportAllStudentFormsWord = function() {
         </tr>`;
         
         allFormsHtml += `
-        <div style="padding-top: 250px;"> <!-- الدفع لمنتصف الصفحة -->
-            <div style="text-align: center; font-weight: bold; font-size: 22px; line-height: 1.8; margin-bottom: 25px;">
-                جامعة دجلة<br>
-                كلية الهندسة<br>
-                قسم الليزر والالكترونيات البصرية<br>
-                اسم المؤسسة الحكومية (${loc})<br>
-                مدة التدريب (1\\7) الى (31\\7)<br>
-                اسماء الطلبة الراغبين بالتدريب للعام الدراسي 2025-2026
-            </div>
-            <table style="width: 85%; margin: 0 auto; border-collapse: collapse; margin-bottom: 40px; text-align: center;" border="1">
-                <thead>
-                    <tr>
-                        <th style="border: 1px solid black; padding: 15px; background-color: #f9f9f9; font-size: 18px; width: 10%;">ت</th>
-                        <th style="border: 1px solid black; padding: 15px; background-color: #f9f9f9; font-size: 18px; width: 50%;">اسم الطالب</th>
-                        <th style="border: 1px solid black; padding: 15px; background-color: #f9f9f9; font-size: 18px; width: 20%;">المرحلة</th>
-                        <th style="border: 1px solid black; padding: 15px; background-color: #f9f9f9; font-size: 18px; width: 20%;">نوع الدراسة</th>
-                    </tr>
-                </thead>
-                <tbody>${tableRows}</tbody>
-            </table>
+        <br><br><br><br><br><br><br><br><br><br><br>
+        <div style="text-align: center; font-weight: bold; font-size: 22px; line-height: 1.8; margin-bottom: 25px;">
+            جامعة دجلة<br>
+            كلية الهندسة<br>
+            قسم الليزر والالكترونيات البصرية<br>
+            اسم المؤسسة الحكومية (${loc})<br>
+            مدة التدريب (1\\7) الى (31\\7)<br>
+            اسماء الطلبة الراغبين بالتدريب للعام الدراسي 2025-2026
         </div>
+        <table style="width: 85%; margin: 0 auto; border-collapse: collapse; margin-bottom: 40px; text-align: center;" border="1">
+            <thead>
+                <tr>
+                    <th style="border: 1px solid black; padding: 15px; background-color: #f9f9f9; font-size: 18px; width: 10%;">ت</th>
+                    <th style="border: 1px solid black; padding: 15px; background-color: #f9f9f9; font-size: 18px; width: 50%;">اسم الطالب</th>
+                    <th style="border: 1px solid black; padding: 15px; background-color: #f9f9f9; font-size: 18px; width: 20%;">المرحلة</th>
+                    <th style="border: 1px solid black; padding: 15px; background-color: #f9f9f9; font-size: 18px; width: 20%;">نوع الدراسة</th>
+                </tr>
+            </thead>
+            <tbody>${tableRows}</tbody>
+        </table>
         `;
         
         // كود الفاصل لإنشاء ورقة جديدة لكل طالب (متوافق مع الوورد)
@@ -1620,27 +1619,26 @@ window.bulkExportAllFormsWord = function() {
             </tr>`;
             
             allFormsHtml += `
-            <div style="padding-top: 250px;"> <!-- الدفع لمنتصف الصفحة -->
-                <div style="text-align: center; font-weight: bold; font-size: 22px; line-height: 1.8; margin-bottom: 25px;">
-                    جامعة دجلة<br>
-                    كلية الهندسة<br>
-                    قسم الليزر والالكترونيات البصرية<br>
-                    اسم المؤسسة الحكومية (${loc})<br>
-                    مدة التدريب (1\\7) الى (31\\7)<br>
-                    اسماء الطلبة الراغبين بالتدريب للعام الدراسي 2025-2026
-                </div>
-                <table style="width: 85%; margin: 0 auto; border-collapse: collapse; margin-bottom: 40px; text-align: center;" border="1">
-                    <thead>
-                        <tr>
-                            <th style="border: 1px solid black; padding: 15px; background-color: #f9f9f9; font-size: 18px; width: 10%;">ت</th>
-                            <th style="border: 1px solid black; padding: 15px; background-color: #f9f9f9; font-size: 18px; width: 50%;">اسم الطالب</th>
-                            <th style="border: 1px solid black; padding: 15px; background-color: #f9f9f9; font-size: 18px; width: 20%;">المرحلة</th>
-                            <th style="border: 1px solid black; padding: 15px; background-color: #f9f9f9; font-size: 18px; width: 20%;">نوع الدراسة</th>
-                        </tr>
-                    </thead>
-                    <tbody>${tableRows}</tbody>
-                </table>
+            <br><br><br><br><br><br><br><br><br><br><br>
+            <div style="text-align: center; font-weight: bold; font-size: 22px; line-height: 1.8; margin-bottom: 25px;">
+                جامعة دجلة<br>
+                كلية الهندسة<br>
+                قسم الليزر والالكترونيات البصرية<br>
+                اسم المؤسسة الحكومية (${loc})<br>
+                مدة التدريب (1\\7) الى (31\\7)<br>
+                اسماء الطلبة الراغبين بالتدريب للعام الدراسي 2025-2026
             </div>
+            <table style="width: 85%; margin: 0 auto; border-collapse: collapse; margin-bottom: 40px; text-align: center;" border="1">
+                <thead>
+                    <tr>
+                        <th style="border: 1px solid black; padding: 15px; background-color: #f9f9f9; font-size: 18px; width: 10%;">ت</th>
+                        <th style="border: 1px solid black; padding: 15px; background-color: #f9f9f9; font-size: 18px; width: 50%;">اسم الطالب</th>
+                        <th style="border: 1px solid black; padding: 15px; background-color: #f9f9f9; font-size: 18px; width: 20%;">المرحلة</th>
+                        <th style="border: 1px solid black; padding: 15px; background-color: #f9f9f9; font-size: 18px; width: 20%;">نوع الدراسة</th>
+                    </tr>
+                </thead>
+                <tbody>${tableRows}</tbody>
+            </table>
             `;
             
             totalProcessed++;
